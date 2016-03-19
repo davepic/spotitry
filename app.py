@@ -6,9 +6,6 @@ from wtforms import PasswordField
 
 import requests
 
-
-
-
 app = Flask(__name__)
 
 
@@ -102,6 +99,7 @@ def favorite(id):
 	poster = User.objects(name=current_user.name).first()
 	new_fav = FavoriteBook(author=book_dict["volumeInfo"]["authors"][0], title=book_dict["volumeInfo"]["title"], link=book_url, poster=poster)
 	new_fav.save()
+	print("Hello!")
 	return render_template("confirm.html", api_data=book_dict)
 
 @app.route("/favorites")
