@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<title>{% block title %}{% endblock %}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css')}}">
+
+</head>
+
+<body>
+
+	<div class="top-bar">
+		<div class="top-bar-right">
+			<ul class="menu">
+				<li><a href="/">Home</a></li>
+				<li><a href="/favorites">Favorites</a></li>
+				<li><a href="/search">Search</a></li>
+				<li><a href="/login">Login</a></li>
+				<li><a href="/logout">Logout</a></li>
+				
+			</ul>
+		</div>
+		<div class="top-bar-left">
+			{% block stuff %}{% endblock %}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="large-12 columns">
+			<div class="panel">
+				{% block body %}{% endblock %}
+			</div>
+
+		</div>
+	</div>
+
+<script src="{{ url_for('static', filename='js/vendor/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/foundation.js') }}"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+</html>

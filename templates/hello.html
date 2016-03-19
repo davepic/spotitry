@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %} Reading List App {% endblock %}
+
+{% block stuff %} 
+
+{% if current_user.is_authenticated %}
+
+Logged in as {{current_user.name}} 
+
+{% endif %}
+
+
+{% endblock %}
+{% block body %}
+
+	<h1>Reading List App</h1>
+	<p>This web app allows users to search for books and add them to their reading lists!</p>
+	<a href="/login"><button class="launch-button">Login</button></a>
+	<a href="/register"><button class="launch-button">Register</button></a>
+{% endblock %}				

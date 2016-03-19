@@ -1,0 +1,5 @@
+.DS_STORE
+*.pyc
+*.img
+*.png
+.vagrant/
