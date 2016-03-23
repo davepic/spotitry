@@ -1,8 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
+
+
 {% block body %}
 
-<h2>Login</h2>
+
+{% if not current_user.is_authenticated %}
+
+<h1>Login</h1>
+
+{% if failed %}
+
+	<p class="red_paragraph">Username/Password Incorrect. Try Again</p>
+
+{% endif %}
 
 <form action= "" method="POST">
 
@@ -26,4 +37,11 @@
 
 </form>
 
+{% else %}
+
+<h1>Already logged in as {{current_user.name}}</h1>
+<p>Logout below to sign in as a different user</p>
+<a href="/logout"><button class="launch-button">Logout</button></a>
+
+{% endif %}
 {% endblock %}

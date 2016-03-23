@@ -25,27 +25,24 @@ class User(db.Document):
 	password = db.StringField(required=True)
 
 	def is_authenticated(self):
-
+		
 		users = User.objects(name=self.name, password=self.password)
 		return len(users) != 0
 
 	def is_active(self):
-
 		return True
 
 	def is_anonymous(self):
-
 		return False
 
 	def get_id(self):
-
 		return self.name
 
 
 
 @login_manager.user_loader
 def load_user(name):
-
+	
 	users = User.objects(name=name)
 
 	if len(users) != 0:
@@ -99,8 +96,17 @@ def favorite(id):
 	poster = User.objects(name=current_user.name).first()
 	new_fav = FavoriteBook(author=book_dict["volumeInfo"]["authors"][0], title=book_dict["volumeInfo"]["title"], link=book_url, poster=poster)
 	new_fav.save()
-	print("Hello!")
 	return render_template("confirm.html", api_data=book_dict)
+
+
+@app.route("/favorites/delete/<id>")
+@login_required
+def delete_favorite(id):
+	
+	current_poster = User.objects(name=current_user.name).first()
+	FavoriteBook.objects(poster=current_poster, title=id).delete()
+
+	return redirect("/favorites")
 
 @app.route("/favorites")
 @login_required
@@ -132,11 +138,19 @@ def login():
 
 	if request.method == 'POST' and form.validate():
 
-		user = User(name=form.name.data, password=form.password.data)
-		login_user(user)
-		return redirect('/search')
+		users = User.objects(name=form.name.data, password=form.password.data)
+		
+		if len(users) != 0:
 
-	return render_template('login.html', form=form)
+			user = User(name=form.name.data, password=form.password.data)
+			login_user(user)
+			return redirect('/')
+
+		else:
+			return render_template('login.html', form=form, failed=True)
+	else:
+
+		return render_template('login.html', form=form)
 
 @app.route("/logout")
 def logout():

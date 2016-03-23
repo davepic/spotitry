@@ -9,12 +9,30 @@ Logged in as {{current_user.name}}
 
 {% endif %}
 
-
 {% endblock %}
-{% block body %}
 
+
+
+
+{% block body %}
+{% if current_user.is_authenticated %}
+	<h1>Welcome back {{current_user.name}}!</h1>
+	<p>View your favorites or search for new books below</p>
+	<a href="/favorites"><button class="launch-button">Your Favorites</button></a>
+	<a href="/search"><button class="launch-button">Search</button></a>
+
+{% else %}
+	
 	<h1>Reading List App</h1>
 	<p>This web app allows users to search for books and add them to their reading lists!</p>
 	<a href="/login"><button class="launch-button">Login</button></a>
 	<a href="/register"><button class="launch-button">Register</button></a>
-{% endblock %}				
+
+{% endif %}
+
+{% endblock %}	
+
+
+
+
+	
