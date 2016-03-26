@@ -30,8 +30,35 @@
 							</h5>
 
 						</li>
-						
+						<li>
+							
+							<h5 class="blue helvetica"> {{api_data["events"][n]["venue"]["display_location"]}}</h5>
 
+						</li>
+						<ul class="results">
+							<li class="results">
+								
+								<h6 class="blue helvetica"> Listing Count: {{api_data["events"][n]["stats"]["listing_count"]}}</h6>
+
+
+							</li>
+
+							<li class="results">
+								
+								<h6 class="blue helvetica"> Average Price: ${{api_data["events"][n]["stats"]["average_price"]}}</h6>
+
+
+							</li>
+
+							<li class="results">
+								
+								<h6 class="blue helvetica"> Price Range: ${{api_data["events"][n]["stats"]["lowest_price"]}} - ${{api_data["events"][n]["stats"]["highest_price"]}}
+								</h6>
+
+
+							</li>
+
+						</ul>
 
 				</li>
 
