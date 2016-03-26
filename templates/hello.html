@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} Reading List App {% endblock %}
+{% block title %} Event Saver App {% endblock %}
 
 {% block stuff %} 
 
@@ -17,14 +17,14 @@ Logged in as {{current_user.name}}
 {% block body %}
 {% if current_user.is_authenticated %}
 	<h1>Welcome back {{current_user.name}}!</h1>
-	<p>View your favorites or search for new books below</p>
+	<p>View your favorites or search for new events below</p>
 	<a href="/favorites"><button class="launch-button">Your Favorites</button></a>
 	<a href="/search"><button class="launch-button">Search</button></a>
 
 {% else %}
 	
-	<h1>Reading List App</h1>
-	<p>This web app allows users to search for books and add them to their reading lists!</p>
+	<h1>Event Saver App</h1>
+	<p>This web app allows users to search for events and add them to their list of favorites!</p>
 	<a href="/login"><button class="launch-button">Login</button></a>
 	<a href="/register"><button class="launch-button">Register</button></a>
 

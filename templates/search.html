@@ -8,18 +8,25 @@
 	<h1>Search</h1>
 	<form action="/search" method="POST">
 
-	<div class="small-10 columns">
+	<div class="small-12 columns">
 
-		<input type="text" placeholder="Search for a book" name="user_search" required/>
+		<input type="text" placeholder="Enter event description" name="user_search" required/>
 
 	</div>
-	<div class="small-2 columns">
-		<button class="postfix search-button"type ="submit">Search</button>
+
+	<div class="small-12 columns">
+		<input type="text" placeholder="Enter event location" name="other_search"/>
+	</div>
+	<div class="small-12 columns">
+		<button class="postfix search-button"type="submit">Search</button>
 	</div>
 
+	
+
+
+
+	{% block results %}{% endblock %}
 
 	</form>
 
-	{% block results %}{% endblock %}
 {% endblock %}
-

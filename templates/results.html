@@ -1,22 +1,53 @@
 {% extends "search.html" %}
 {% block results %}
-<div class="results">
-	{% if api_data["totalItems"] > 0 %}
+
+
+	{% if num_events > 0 %}
+	
+		
+		
+		{% for n in range(num_events)%}
+		<div class="row">
+		<div class="small-12 columns">
+		<ul class="results">
+				<li class="results">
+			
+					<img src={{api_data["events"][n]["performers"][0]["image"]}} height=300 width=300>
+				</li>
+		
 		<ul>
-		{% for book in api_data["items"] %}
 			<li>
-				<a href={{ book.accessInfo.webReaderLink }}><h3>{{ book.volumeInfo.title }}</h3></a>
-				<h5>
-					{% for author in book.volumeInfo.authors %}
-						<ul>{{ author }}</ul>
-					{% endfor %}
-				</h5>
-				<a href="/favorite/{{ book.id}}">Add to favorites</a>
-			</li>
-		{% endfor %}
+				
+					
+						<li>
+							<a href={{ api_data["events"][n]["url"] }}><h5>{{ api_data["events"][n]["title"] }}</h5></a>
+						</li>
+						<li>
+							<h5 class="blue helvetica">
+							
+								{{date_list[n]}} {{time_list[n]}}
+							
+							</h5>
+
+						</li>
+						
+
+
+				</li>
+
+			</ul>
 		</ul>
+		</div>
+		</div>
+		
+		
+		{% endfor %}
+		
+		
 	{% else %}
-		<p>There were no books found.</p>
+		<h1 class="blue helvetica">There were no events found.</h1>
 	{% endif %}
-</div>
+	
+
+
 {% endblock %}
