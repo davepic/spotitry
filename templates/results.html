@@ -10,17 +10,27 @@
 		<div class="row">
 		<div class="small-12 columns">
 		<ul class="results">
+
+				{% if api_data["events"][n]["performers"][0]["image"] %}
 				<li class="results">
 			
 					<img src={{api_data["events"][n]["performers"][0]["image"]}} height=300 width=300>
 				</li>
-		
+
+				{% else %}
+
+				<li class="results">
+				<img src="http://www.coloradowindensemble.org/wp-content/uploads/2013/06/ticket-graphic-ticket4.png" height=300 width=300>
+
+				</li>
+				
+				{% endif %}
 		<ul>
 			<li>
 				
 					
 						<li>
-							<a href={{ api_data["events"][n]["url"] }}><h5>{{ api_data["events"][n]["title"] }}</h5></a>
+							<a href={{ api_data["events"][n]["url"] }}><h5 class="helvetica">{{ api_data["events"][n]["title"] }}</h5></a>
 						</li>
 						<li>
 							<h5 class="blue helvetica">
@@ -36,28 +46,36 @@
 
 						</li>
 						<ul class="results">
+							
+							{% if api_data["events"][n]["stats"]["listing_count"] %}
+
 							<li class="results">
 								
-								<h6 class="blue helvetica"> Listing Count: {{api_data["events"][n]["stats"]["listing_count"]}}</h6>
+								<h6 class="blue helvetica"> Number of Listings: {{api_data["events"][n]["stats"]["listing_count"]}}</h6>
 
 
 							</li>
 
 							<li class="results">
 								
-								<h6 class="blue helvetica"> Average Price: ${{api_data["events"][n]["stats"]["average_price"]}}</h6>
+								<h6 class="blue helvetica"> Average Price: ${{price_list[n][0]}}</h6>
 
 
 							</li>
 
 							<li class="results">
 								
-								<h6 class="blue helvetica"> Price Range: ${{api_data["events"][n]["stats"]["lowest_price"]}} - ${{api_data["events"][n]["stats"]["highest_price"]}}
+								<h6 class="blue helvetica"> Price Range: ${{price_list[n][1]}} - ${{price_list[n][2]}}
 								</h6>
 
 
 							</li>
 
+							{% else %}
+
+								<h6 class="redlines"> Tickets currently unavailable</h6>
+
+							{% endif %}
 						</ul>
 
 				</li>
@@ -68,9 +86,16 @@
 		</div>
 		
 		
+
+
+
+		
 		{% endfor %}
 		
-		
+	
+	
+
+
 	{% else %}
 		<h1 class="blue helvetica">There were no events found.</h1>
 	{% endif %}

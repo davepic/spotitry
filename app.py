@@ -65,7 +65,6 @@ class FavoriteEvent(db.Document):
 	poster = db.ReferenceField(newUser)
 
 
-
 @app.route("/")
 def hello():
 
@@ -81,6 +80,7 @@ def search():
 		total = 0
 		date_list= []
 		time_list = []
+		price_list = []
 
 		if request.form["other_search"]:
 			url = "https://api.seatgeek.com/2/events?venue.state=" + request.form["other_search"] + "&q=" + request.form["user_search"] + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
@@ -107,19 +107,21 @@ def search():
 
 			if int(temp_list[3][:2]) > 12:
 
-				time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:] + " PM"
+				time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
 
 			else:
 
-				time_str = temp_list[3] + " AM"
+				time_str = temp_list[3][:5] + " AM"
        
 			date_list.append(date_str)
 			time_list.append(time_str)
 
+			price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
+
         	
 		num_events= len(date_list)
 		print url
-		return render_template("results.html", api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
+		return render_template("results.html", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
 	else: 
 		return render_template("search.html")
 
