@@ -21,15 +21,15 @@
 
 	<div>
 
-		{{form.name.label}}
-		{{form.name}}
+		{{form.Email.label}}
+		{{form.Email}}
 
 	</div>
 
 	<div>
 
-		{{form.password.label}}
-		{{form.password}}
+		{{form.Password.label}}
+		{{form.Password}}
 
 	</div>
 
@@ -39,7 +39,7 @@
 
 {% else %}
 
-<h1>Already logged in as {{current_user.name}}</h1>
+<h1>Already logged in as {{current_user.Email}}</h1>
 <p>Logout below to sign in as a different user</p>
 <a href="/logout"><button class="launch-button">Logout</button></a>
 

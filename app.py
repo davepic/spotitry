@@ -4,11 +4,30 @@ from flask.ext.login import LoginManager, login_user, logout_user, login_require
 from flask.ext.mongoengine.wtf import model_form
 from wtforms import PasswordField
 
-
+from flask_mail import Mail, Message
 import requests.packages.urllib3
 #requests.packages.urllib3.disable_warnings()
 
+
+
+
+
+
+
 app = Flask(__name__)
+app.config.update(dict(
+
+	MAIL_SERVER='smtp.gmail.com',
+	MAIL_PORT=465,
+	MAIL_USE_TLS=False,
+	MAIL_USE_SSL= True,
+	MAIL_USERNAME = 'username',
+	MAIL_PASSWORD = 'password'
+
+	))
+
+mailer = Mail(app)
+
 
 
 login_manager = LoginManager()
@@ -23,12 +42,12 @@ db = MongoEngine(app)
 
 class newUser(db.Document):
 
-	name = db.StringField(required=True, unique=True)
-	password = db.StringField(required=True)
+	Email = db.StringField(required=True, unique=True)
+	Password = db.StringField(required=True)
 
 	def is_authenticated(self):
 		
-		users = newUser.objects(name=self.name, password=self.password)
+		users = newUser.objects(Email=self.Email, Password=self.Password)
 		return len(users) != 0
 
 	def is_active(self):
@@ -38,14 +57,14 @@ class newUser(db.Document):
 		return False
 
 	def get_id(self):
-		return self.name
+		return self.Email
 
 
 
 @login_manager.user_loader
-def load_user(name):
+def load_user(Email):
 	
-	users = newUser.objects(name=name)
+	users = newUser.objects(Email=Email)
 
 	if len(users) != 0:
 		return users[0]
@@ -54,7 +73,7 @@ def load_user(name):
 		return None
 
 UserForm = model_form(newUser)
-UserForm.password = PasswordField('password')
+UserForm.Password = PasswordField('Password')
 
 class FavoriteEvent(db.Document):
 	title = db.StringField(required=True)
@@ -63,6 +82,8 @@ class FavoriteEvent(db.Document):
 	event_id = db.StringField(required=True)
 	link = db.StringField(required=True)
 	poster = db.ReferenceField(newUser)
+
+
 
 
 @app.route("/")
@@ -132,7 +153,7 @@ def search():
 def favorite(id):
 	book_url = "https://www.googleapis.com/books/v1/volumes/" + id
 	book_dict = requests.get(book_url).json()
-	poster = newUser.objects(name=current_user.name).first()
+	poster = newUser.objects(Email=current_user.Email).first()
 	new_fav = FavoriteBook(author=book_dict["volumeInfo"]["authors"][0], title=book_dict["volumeInfo"]["title"], link=book_url, poster=poster)
 	new_fav.save()
 	return render_template("confirm.html", api_data=book_dict)
@@ -152,7 +173,7 @@ def delete_favorite(id):
 def favorites():
 
 
-	current_poster = newUser.objects(name=current_user.name).first()
+	current_poster = newUser.objects(Email=current_user.Email).first()
 	favorites = FavoriteBook.objects(poster=current_poster)
 	return render_template("favorites.html", current_user = current_user, favorites=favorites)
 
@@ -166,7 +187,13 @@ def register():
 
 		form.save()
 
-		return redirect("/login")
+		msg = Message("Thanks for registering, " + form.Email.data, sender="davepiccolella@gmail.com", recipients=[form.Email.data])
+		msg.html= render_template("email.html")
+		mailer.send(msg)
+
+
+
+		return render_template("register_confirm.html", form=form)
 
 	return render_template("register.html", form=form)
 
@@ -177,11 +204,11 @@ def login():
 
 	if request.method == 'POST' and form.validate():
 
-		users = newUser.objects(name=form.name.data, password=form.password.data)
+		users = newUser.objects(Email=form.Email.data, Password=form.Password.data)
 		
 		if len(users) != 0:
 
-			user = newUser(name=form.name.data, password=form.password.data)
+			user = newUser(Email=form.Email.data, Password=form.Password.data)
 			login_user(user)
 			return redirect('/')
 
@@ -195,12 +222,9 @@ def login():
 def logout():
 
 	logout_user()
-	return redirect("/logout_confirm")
-
-@app.route("/logout_confirm")
-def logout_confirm():
-
 	return render_template('logout.html')
+
+
 
 
 if __name__ == "__main__":

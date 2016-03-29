@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Registration Confirmed{% endblock %}
+
+
+{% block body %}
+
+
+<h1>Thank you for registering!</h1>
+<p>A confirmation email has been sent to {{form.Email.data}}</p>
+<a href="/login"><button class="launch-button">Login</button></a>
+
+{% endblock %}
