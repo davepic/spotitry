@@ -174,7 +174,7 @@ def favorites():
 
 
 	current_poster = newUser.objects(Email=current_user.Email).first()
-	favorites = FavoriteBook.objects(poster=current_poster)
+	favorites = FavoriteEvent.objects(poster=current_poster)
 	return render_template("favorites.html", current_user = current_user, favorites=favorites)
 
 

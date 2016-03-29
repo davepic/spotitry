@@ -2,7 +2,7 @@
 {% block title %}Favorites{% endblock %}
 {% block body %}
 
-<h1>{{current_user.name}}'s Favorites</h1>
+<h1>{{current_user.Email}}'s Favorites</h1>
 
 {% if favorites|length >0 %}
 
@@ -13,8 +13,8 @@
 		<li>
 
 			<a href= {{fav.link}}><h3>{{fav.title}}</h3></a>
-			<h5><ul>{{fav.author}}</ul></h5>
-			<a href="/favorites/delete/{{fav.title}}">Delete</a>
+			<h5><ul>{{fav.location}}</ul></h5>
+			<!--<a href="/favorites/delete/{{fav.title}}">Delete</a>!-->
 
 
 		</li>
