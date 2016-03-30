@@ -16,7 +16,7 @@ Logged in as {{current_user.Email}}
 
 {% block body %}
 {% if current_user.is_authenticated %}
-	<h1>Welcome back {{current_user.name}}!</h1>
+	<h1>Welcome Back {{current_user.Email}}!</h1>
 	<p>View your favorites or search for new events below</p>
 	<a href="/favorites"><button class="launch-button">Your Favorites</button></a>
 	<a href="/search"><button class="launch-button">Search</button></a>
