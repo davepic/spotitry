@@ -2,28 +2,28 @@
 {% block title %}Favorites{% endblock %}
 {% block body %}
 
-<h1>{{current_user.Email}}'s Favorites</h1>
+<h1 style="margin-bottom: 10px">{{current_user.Email}}'s Favorites</h1>
 
 {% if favorites|length >0 %}
 
-	<ul>
+	<ul style="list-style: none; list-style-type: none;">
 
 	{% for fav in favorites %}
 
-		<li>
+		<li style="border: 3px solid black; width: 50%; display:inline-block; margin: 0 0 10px 0; background-color: #7AA9DD;">
 
 			<a href= {{fav.link}}><h3>{{fav.title}}</h3></a>
+		
 			<h5><ul>{{fav.location}}</ul></h5>
-			<!--<a href="/favorites/delete/{{fav.title}}">Delete</a>!-->
-
-
+		
+			<a href="/favorites/delete/{{fav.event_id}}">Delete</a>
 		</li>
 	{% endfor %}
 
 	</ul>
 
 {% else %}
-	<p>You haven't added any favorites yet.</p>
+	<p style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-style: oblique; color: #FF0000;">You currently have no favorites</p>
 
 {% endif %}
 

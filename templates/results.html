@@ -42,7 +42,7 @@
 						</li>
 						<li>
 							
-							<h5 class="blue helvetica"> {{api_data["events"][n]["venue"]["display_location"]}}</h5>
+							<h5 class="blue helvetica"> {{api_data["events"][n]["venue"]["name"]}}</h5>
 
 						</li>
 						<ul class="results">
@@ -74,7 +74,7 @@
 							{% else %}
 
 							<li>
-								<h6 class="redlines"> Tickets currently unavailable</h6>
+								<h6 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-style: oblique; color: #FF0000; padding-right: 20px;"> Tickets currently unavailable</h6>
 							</li>
 
 							{% endif %}
@@ -87,7 +87,7 @@
 
 				</li>
 				
-				<li><a href="/favorites">Add to Favorites</a></li>
+				<li><a href="/favorite/{{api_data["events"][n]["id"]}}">Add to Favorites</a></li>
 			</ul>
 		</ul>
 		</div>

@@ -79,7 +79,7 @@ class FavoriteEvent(db.Document):
 	title = db.StringField(required=True)
 	date_time = db.StringField(required=True)
 	location = db.StringField(required=True)
-	event_id = db.StringField(required=True)
+	event_id = db.IntField(required=True)
 	link = db.StringField(required=True)
 	poster = db.ReferenceField(newUser)
 
@@ -151,20 +151,21 @@ def search():
 @login_required
 
 def favorite(id):
-	book_url = "https://www.googleapis.com/books/v1/volumes/" + id
-	book_dict = requests.get(book_url).json()
+	event_url = "https://api.seatgeek.com/2/events/" + id
+	event_dict = requests.get(event_url).json()
 	poster = newUser.objects(Email=current_user.Email).first()
-	new_fav = FavoriteBook(author=book_dict["volumeInfo"]["authors"][0], title=book_dict["volumeInfo"]["title"], link=book_url, poster=poster)
-	new_fav.save()
-	return render_template("confirm.html", api_data=book_dict)
-
+	if FavoriteEvent.objects(poster=poster, event_id=id).count() == 0:
+		new_fav = FavoriteEvent(title=event_dict["title"], date_time=event_dict["datetime_local"], location=event_dict["venue"]["name"], event_id=event_dict["id"], link=event_dict["url"], poster=poster)
+		new_fav.save()
+		return render_template("confirm.html", api_data=event_dict, err=False)
+	return render_template("confirm.html", api_data=event_dict, err=True)
 
 @app.route("/favorites/delete/<id>")
 @login_required
 def delete_favorite(id):
 	
-	current_poster = newUser.objects(name=current_user.name).first()
-	FavoriteBook.objects(poster=current_poster, title=id).delete()
+	current_poster = newUser.objects(Email=current_user.Email).first()
+	FavoriteEvent.objects(poster=current_poster, event_id=id).delete()
 
 	return redirect("/favorites")
 
