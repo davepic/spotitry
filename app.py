@@ -3,6 +3,7 @@ from flask.ext.mongoengine import MongoEngine
 from flask.ext.login import LoginManager, login_user, logout_user, login_required, current_user
 from flask.ext.mongoengine.wtf import model_form
 from wtforms import PasswordField
+import datetime
 
 from flask_mail import Mail, Message
 import requests.packages.urllib3
@@ -28,6 +29,7 @@ app.config.update(dict(
 
 mailer = Mail(app)
 
+now = datetime.datetime.now()
 
 
 login_manager = LoginManager()
@@ -94,7 +96,20 @@ class FavoriteEvent(db.Document):
 @app.route("/")
 def hello():
 
+
+	month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
+	print now.year 
+	print month_dict[now.month]
+	url = "https://api.seatgeek.com/2/events?q=" + month_dict[now.month] + " " + str(now.year) +"&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+	print url
+	response_dict = requests.get(url).json()
+	print response_dict["events"][0]["title"]
+
+
+
 	return render_template("hello.html", current_user=current_user)
+	
+
 
 
 
