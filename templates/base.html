@@ -8,6 +8,7 @@
 	<title>{% block title %}{% endblock %}</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.css')}}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css')}}">
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
 
 </head>
 
@@ -15,16 +16,16 @@
 
 	<div class="top-bar">
 		<div class="top-bar-right">
-			<ul class="menu helvetica">
-				<li><a href="/">Home</a></li>
-				<li><a href="/favorites">Favorites</a></li>
-				<li><a href="/search">Search</a></li>
-				<li><a href="/login">Login</a></li>
-				<li><a href="/logout">Logout</a></li>
+			<ul class="menu">
+				<li><a href="/" class="white">Home</a></li>
+				<li><a href="/favorites" class="white">Favorites</a></li>
+				<li><a href="/search" class="white">Search</a></li>
+				<li><a href="/login" class="white">Login</a></li>
+				<li><a href="/logout" class="white">Logout</a></li>
 				
 			</ul>
 		</div>
-		<div class="top-bar-left helvetica">
+		<div class="top-bar-left white">
 			{% block stuff %}
 
 				{% if current_user.is_authenticated %}

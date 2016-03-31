@@ -12,14 +12,14 @@
 		<ul class="results">
 
 				{% if api_data["events"][n]["performers"][0]["image"] %}
-				<li class="results">
+				<li>
 			
 					<img src={{api_data["events"][n]["performers"][0]["image"]}} height=300 width=300>
 				</li>
 
 				{% else %}
 
-				<li class="results">
+				<li>
 				<img src="http://www.coloradowindensemble.org/wp-content/uploads/2013/06/ticket-graphic-ticket4.png" height=300 width=300>
 
 				</li>
@@ -30,10 +30,10 @@
 				
 					
 						<li>
-							<a href={{ api_data["events"][n]["url"] }}><h5 class="helvetica">{{ api_data["events"][n]["title"] }}</h5></a>
+							<a href={{ api_data["events"][n]["url"] }}><h5 class="roberto">{{ api_data["events"][n]["title"] }}</h5></a>
 						</li>
 						<li>
-							<h5 class="blue helvetica">
+							<h5 class="blue roberto">
 							
 								{{date_list[n]}} {{time_list[n]}}
 							
@@ -42,7 +42,7 @@
 						</li>
 						<li>
 							
-							<h5 class="blue helvetica"> {{api_data["events"][n]["venue"]["name"]}}</h5>
+							<h5 class="blue roberto"> {{api_data["events"][n]["venue"]["name"]}}</h5>
 
 						</li>
 						<ul class="results">
@@ -51,21 +51,21 @@
 
 							<li class="results">
 								
-								<h6 class="blue helvetica"> Number of Listings: {{api_data["events"][n]["stats"]["listing_count"]}}</h6>
+								<h6 class="blue roberto"> Number of Listings: {{api_data["events"][n]["stats"]["listing_count"]}}</h6>
 
 
 							</li>
 
 							<li class="results">
 								
-								<h6 class="blue helvetica"> Average Price: ${{price_list[n][0]}}</h6>
+								<h6 class="blue roberto"> Average Price: ${{price_list[n][0]}}</h6>
 
 
 							</li>
 
 							<li class="results">
 								
-								<h6 class="blue helvetica"> Price Range: ${{price_list[n][1]}} - ${{price_list[n][2]}}
+								<h6 class="blue roberto"> Price Range: ${{price_list[n][1]}} - ${{price_list[n][2]}}
 								</h6>
 
 
@@ -74,7 +74,7 @@
 							{% else %}
 
 							<li>
-								<h6 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-style: oblique; color: #FF0000; padding-right: 20px;"> Tickets currently unavailable</h6>
+								<h6 style="color: #FF0000; padding-right: 150px; font-family: 'Roboto Condensed', sans-serif;"> Tickets currently unavailable</h6>
 							</li>
 
 							{% endif %}
@@ -87,7 +87,7 @@
 
 				</li>
 				
-				<li><a href="/favorite/{{api_data["events"][n]["id"]}}">Add to Favorites</a></li>
+				<li><a href="/favorite/{{api_data["events"][n]["id"]}}" class="button" style="background-color: #00688B; color:white;">Add to Favorites</a></li>
 			</ul>
 		</ul>
 		</div>
@@ -105,7 +105,7 @@
 
 
 	{% else %}
-		<h1 class="blue helvetica">There were no events found.</h1>
+		<h1 class="blue">There were no events found.</h1>
 	{% endif %}
 	
 
