@@ -7,12 +7,13 @@
 		
 		
 		{% for n in range(num_events)%}
-		<div class="row">
-		<div class="small-12 columns">
-		<ul class="results">
+		
+		<div class="row" style="width:99.5%;">
+		<div class="small-12 columns" >
+		<ul class="results" style="border-style: solid; border-color: #00688B; border-width:2px; margin-top:20px; margin-bottom: 20px; padding-top: 10px;height: 270px; background-color: rgba(188,210,238, .9);">
 
 				{% if api_data["events"][n]["performers"][0]["image"] %}
-				<li>
+				<li style="padding-top: 15px;">
 			
 					<img src={{api_data["events"][n]["performers"][0]["image"]}} height=300 width=300>
 				</li>
@@ -30,7 +31,7 @@
 				
 					
 						<li>
-							<a href={{ api_data["events"][n]["url"] }}><h5 class="roberto">{{ api_data["events"][n]["title"] }}</h5></a>
+							<h5 class="blue roberto">{{ api_data["events"][n]["title"] }}</h5>
 						</li>
 						<li>
 							<h5 class="blue roberto">
@@ -49,7 +50,7 @@
 							
 							{% if api_data["events"][n]["stats"]["listing_count"] %}
 
-							<li class="results">
+							<li class="results" style="padding-top: 0px;">
 								
 								<h6 class="blue roberto"> Number of Listings: {{api_data["events"][n]["stats"]["listing_count"]}}</h6>
 
@@ -74,7 +75,7 @@
 							{% else %}
 
 							<li>
-								<h6 style="color: #FF0000; padding-right: 150px; font-family: 'Roboto Condensed', sans-serif;"> Tickets currently unavailable</h6>
+								<h6 style="color: #FF0000; padding-right: 300px; font-family: 'Roboto Condensed', sans-serif;"> Tickets currently unavailable</h6>
 							</li>
 
 							{% endif %}
@@ -86,15 +87,21 @@
 
 
 				</li>
+
+				<ul class="results">
 				
 				<li><a href="/favorite/{{api_data["events"][n]["id"]}}" class="button" style="background-color: #00688B; color:white;">Add to Favorites</a></li>
+
+				<li><a href="{{api_data["events"][n]["url"]}}" class="button" style="background-color: #00688B; color:white;">View Tickets on SeatGeek</a></li>
+
+				</ul>
 			</ul>
 		</ul>
+		
 		</div>
 		</div>
 		
 		
-
 
 
 		

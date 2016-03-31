@@ -122,12 +122,12 @@ button:hover {
 
 	list-style: none;
 	list-style-type: none;
-
 	text-align: left;
 	float:left;
 	padding-top:10px;
 	padding-right:10px;
 	padding-bottom:10px;
+	padding-left:10px;
 
 
 }
@@ -148,6 +148,8 @@ button:hover {
 	float:left;
 	list-style-type: none;
 	padding-right:10px;
+	padding-left: 20px;
+	padding-top:0px;
 	padding-bottom: 10px;
 
 }
