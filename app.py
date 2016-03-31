@@ -112,9 +112,7 @@ def hello():
 
 
 
-
 @app.route("/search", methods=["POST", "GET"])
-
 @login_required
 def search():
 	if request.method == "POST":
