@@ -109,8 +109,8 @@ def hello():
 	response_dict = requests.get(url).json()
 	total = response_dict["meta"]["total"]
 
-	if total > 100:
-		url = url + "&per_page=100"
+	if total > 200:
+		url = url + "&per_page=200"
 	else:
 		url = url + "&per_page=" + str(total)
 	
@@ -128,7 +128,7 @@ def hello():
 	
 	while event_count < count:
 
-		if response_dict["events"][i]["performers"][0]["image"]:
+		if response_dict["events"][i]["performers"][0]["image"] and not (response_dict["events"][i]["title"] in title_list):
 			image_list.append(response_dict["events"][i]["performers"][0]["image"])
 			title_list.append(response_dict["events"][i]["title"])
 			id_list.append(response_dict["events"][i]["id"])
