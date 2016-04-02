@@ -118,7 +118,11 @@ def hello():
 	count = min(total, 10)
 	image_list = []
 	title_list = []
+	date_list= []
+	time_list= []
 	id_list = []
+	location_list = []
+	venue_list= []
 	event_count = 0
 	i = 0
 	
@@ -128,6 +132,28 @@ def hello():
 			image_list.append(response_dict["events"][i]["performers"][0]["image"])
 			title_list.append(response_dict["events"][i]["title"])
 			id_list.append(response_dict["events"][i]["id"])
+			venue_list.append(response_dict["events"][i]["venue"]["name"])
+			location_list.append(response_dict["events"][i]["venue"]["display_location"])
+			date_str = ""
+			time_str = ""
+			mystr = ""
+			temp_list=[]
+			mystr = response_dict["events"][i]["datetime_local"]
+			mystr = mystr.replace('-', ' ')
+			mystr = mystr.replace('T', ' ')
+			temp_list = (mystr.split(' '))
+			date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
+
+			if int(temp_list[3][:2]) > 12:
+
+				time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
+
+			else:
+
+				time_str = temp_list[3][:5] + " AM"
+       
+			date_list.append(date_str)
+			time_list.append(time_str)
 			event_count= event_count+1
 			i = i +1
 
@@ -135,7 +161,7 @@ def hello():
 			i = i + 1
 
 
-	return render_template("hello.html", current_user=current_user, total=count, image_list=image_list, title_list=title_list, id_list=id_list)
+	return render_template("hello.html", current_user=current_user, total=count, venue_list= venue_list, location_list=location_list, date_list=date_list, time_list=time_list, image_list=image_list, title_list=title_list, id_list=id_list)
 	
 
 

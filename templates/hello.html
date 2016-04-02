@@ -42,7 +42,23 @@ Logged in as {{current_user.Email}}
 
  
     	<img class="orbit-image" src={{image_list[n]}} alt="Event">
-    	<figcaption class="orbit-caption">{{title_list[n]}}</figcaption>
+    	<figcaption class="orbit-caption">
+
+
+    		<div>{{title_list[n]}}</div>
+    		<ul>
+    			<li style="display:inline;">{{venue_list[n]}}</li>
+    			<li style="display:inline;">|</li>
+    			<li style="display:inline;">{{location_list[n]}}</li>
+    			<li style="display:inline;">|</li>
+    			<li style="display:inline;">{{date_list[n]}}</li>
+    			<li style="display:inline;">|</li>
+    			<li style="display:inline;">{{time_list[n]}}</li>
+    		</ul>
+    		
+
+
+    	</figcaption>
 
   
     </li>
