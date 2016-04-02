@@ -101,13 +101,14 @@ def hello():
 	print now.year 
 	print month_dict[now.month]
 	url = "https://api.seatgeek.com/2/events?q=" + month_dict[now.month] + " " + str(now.year) +"&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-	print url
 	response_dict = requests.get(url).json()
-	print response_dict["events"][0]["title"]
+	total = response_dict["meta"]["total"]
+	print total
+	count = min(total, 10)
+	
 
 
-
-	return render_template("hello.html", current_user=current_user)
+	return render_template("hello.html", current_user=current_user, response_dict=response_dict, total=count)
 	
 
 

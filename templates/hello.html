@@ -16,9 +16,9 @@ Logged in as {{current_user.Email}}
 
 {% block body %}
 {% if current_user.is_authenticated %}
-	<h1>Welcome Back {{current_user.Email}}!</h1>
-	<p>View your favorites or search for new events below</p>
-	<a href="/favorites"><button class="launch-button">Your Favorites</button></a>
+	<h1 style="padding-bottom:0px;">Welcome Back {{current_user.Email}}!</h1>
+	<p style="padding:0px; margin-bottom:0px;">View your favorites or search for new events below</p>
+	<a href="/favorites" style="margin-top:0px;padding-top: 0px;"><button class="launch-button">Your Favorites</button></a>
 	<a href="/search"><button class="launch-button">Search</button></a>
 
 {% else %}
@@ -30,27 +30,45 @@ Logged in as {{current_user.Email}}
 
 {% endif %}
 
-<div class="orbit" role="region" aria-label="Favorite Space Pictures" data-orbit style="padding-top:100px;width:75%; height: 75%; display:block; margin: 0 auto;">
+
+
+<div class="orbit" role="region" aria-label="Favorite Space Pictures" data-orbit style=" padding-top: 25px; width:75%; height:10%; display:block; margin: 0 auto;">
   <ul class="orbit-container">
-    <button class="orbit-previous"><span class="show-for-sr">Previous Slide</span>&#9664;&#xFE0E;</button>
-    <button class="orbit-next"><span class="show-for-sr">Next Slide</span>&#9654;&#xFE0E;</button>
-    <li class="is-active orbit-slide">
-      <p>SLIDE 1</p>
-    </li>
+    <button class="orbit-previous" style="float:left;"><span class="show-for-sr">Previous Slide</span>&#9664;&#xFE0E;</button>
+    <button class="orbit-next" style="float:right;"><span class="show-for-sr">Next Slide</span>&#9654;&#xFE0E;</button>
+
+    
     <li class="orbit-slide">
-      <p>SLIDE 2</p>
+
+
+    	<img class="orbit-image" src={{response_dict["events"][0]["performers"][0]["image"]}} alt="Space">
+
     </li>
+
     <li class="orbit-slide">
-      <p>SLIDE 3</p>
+
+
+    	<img class="orbit-image" src={{response_dict["events"][1]["performers"][0]["image"]}} alt="Space">
+
     </li>
+
     <li class="orbit-slide">
-      <p>SLIDE 4</p>
+
+
+    	<img class="orbit-image" src={{response_dict["events"][2]["performers"][0]["image"]}} alt="Space">
+
+    </li>
+
+    
+    
   </ul>
-  <nav class="orbit-bullets">
+  <nav class="orbit-bullets" style="margin-top:20px;">
     <button class="is-active" data-slide="0"><span class="show-for-sr">First slide details.</span><span class="show-for-sr">Current Slide</span></button>
-    <button data-slide="1"><span class="show-for-sr">Second slide details.</span></button>
-    <button data-slide="2"><span class="show-for-sr">Third slide details.</span></button>
-    <button data-slide="3"><span class="show-for-sr">Fourth slide details.</span></button>
+    
+    <button data-slide="1"><span class="show-for-sr">Slide Details</span></button>
+   	<button data-slide="2"><span class="show-for-sr">Slide Details</span></button>
+
+    
   </nav>
 </div>
 
