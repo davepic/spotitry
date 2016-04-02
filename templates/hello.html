@@ -1,15 +1,7 @@
 {% extends "base.html" %}
 {% block title %} Event Saver App {% endblock %}
 
-{% block stuff %} 
 
-{% if current_user.is_authenticated %}
-
-Logged in as {{current_user.Email}} 
-
-{% endif %}
-
-{% endblock %}
 
 
 
@@ -33,7 +25,7 @@ Logged in as {{current_user.Email}}
 
 
 <div class="orbit" role="region" aria-label="Favorite Space Pictures" data-orbit style=" padding-top: 25px; display:block; margin: 0 auto;">
-  <ul class="orbit-container" style="width:500px; height:500px; display: block; margin: 0 auto;"> 
+  <ul class="orbit-container" style="width:500px; height:500px; display: block; margin: 0 auto; border-style: solid; border-width: 5px; border-color: #00688B"> 
     <button class="orbit-previous" style="float:left;"><span class="show-for-sr">Previous Slide</span>&#9664;&#xFE0E;</button>
     <button class="orbit-next" style="float:right;"><span class="show-for-sr">Next Slide</span>&#9654;&#xFE0E;</button>
 

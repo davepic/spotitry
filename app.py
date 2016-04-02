@@ -22,7 +22,7 @@ app.config.update(dict(
 	MAIL_PORT=465,
 	MAIL_USE_TLS=False,
 	MAIL_USE_SSL= True,
-	MAIL_USERNAME = 'username',
+	MAIL_USERNAME = 'email',
 	MAIL_PASSWORD = 'password'
 
 	))
@@ -46,10 +46,12 @@ class newUser(db.Document):
 
 	Email = db.StringField(required=True, unique=True)
 	Password = db.StringField(required=True)
+	State = db.StringField(required=False)
+	Username = db.StringField(required=False)
 
 	def is_authenticated(self):
 		
-		users = newUser.objects(Email=self.Email, Password=self.Password)
+		users = newUser.objects(Email=self.Email, Password=self.Password, State=self.State, Username=self.Username)
 		return len(users) != 0
 
 	def is_active(self):
@@ -104,8 +106,13 @@ def hello():
 	date_1 = date_1.strftime('%Y-%m-%d')
 	end_date = end_date.strftime('%Y-%m-%d')
 
-	url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-	
+	if current_user.is_authenticated:
+		
+		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" +current_user.State + "&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+	else:
+		
+		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+
 	response_dict = requests.get(url).json()
 	total = response_dict["meta"]["total"]
 
@@ -259,7 +266,7 @@ def register():
 
 		form.save()
 
-		msg = Message("Thanks for registering, " + form.Email.data, sender="davepiccolella@gmail.com", recipients=[form.Email.data])
+		msg = Message("Thanks for registering, " + form.Username.data, sender="davepiccolella@gmail.com", recipients=[form.Email.data])
 		msg.html= render_template("email.html")
 		mailer.send(msg)
 
@@ -275,6 +282,7 @@ def login():
 	form = UserForm(request.form)
 
 	if request.method == 'POST' and form.validate():
+		
 
 		users = newUser.objects(Email=form.Email.data, Password=form.Password.data)
 		

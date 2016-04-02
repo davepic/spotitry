@@ -19,28 +19,28 @@
 
 	{{form.csrf_token}}
 
-	<div>
+	<div style="margin: 0 auto; width:50%;">
 
 		{{form.Email.label}}
 		{{form.Email}}
 
 	</div>
 
-	<div>
+	<div style="margin: 0 auto; width: 50%;">
 
 		{{form.Password.label}}
 		{{form.Password}}
 
 	</div>
 
-	<input type="submit" value="Login">
+	<button type="submit" class="launch-button">Submit</button>
 
 </form>
 
 {% else %}
 
-<h1>Already logged in as {{current_user.Email}}</h1>
-<p>Logout below to sign in as a different user</p>
+<h1>Already logged in with {{current_user.Email}}</h1>
+<p>Logout below to sign in with a different email</p>
 <a href="/logout"><button class="launch-button">Logout</button></a>
 
 {% endif %}
