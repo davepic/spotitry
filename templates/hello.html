@@ -32,43 +32,31 @@ Logged in as {{current_user.Email}}
 
 
 
-<div class="orbit" role="region" aria-label="Favorite Space Pictures" data-orbit style=" padding-top: 25px; width:75%; height:10%; display:block; margin: 0 auto;">
-  <ul class="orbit-container">
+<div class="orbit" role="region" aria-label="Favorite Space Pictures" data-orbit style=" padding-top: 25px; display:block; margin: 0 auto;">
+  <ul class="orbit-container" style="width:500px; height:500px; display: block; margin: 0 auto;"> 
     <button class="orbit-previous" style="float:left;"><span class="show-for-sr">Previous Slide</span>&#9664;&#xFE0E;</button>
     <button class="orbit-next" style="float:right;"><span class="show-for-sr">Next Slide</span>&#9654;&#xFE0E;</button>
 
-    
+    {% for n in range(total) %}
     <li class="orbit-slide">
 
+ 
+    	<img class="orbit-image" src={{image_list[n]}} alt="Event">
+    	<figcaption class="orbit-caption">{{title_list[n]}}</figcaption>
 
-    	<img class="orbit-image" src={{response_dict["events"][0]["performers"][0]["image"]}} alt="Space">
-
+  
     </li>
-
-    <li class="orbit-slide">
-
-
-    	<img class="orbit-image" src={{response_dict["events"][1]["performers"][0]["image"]}} alt="Space">
-
-    </li>
-
-    <li class="orbit-slide">
-
-
-    	<img class="orbit-image" src={{response_dict["events"][2]["performers"][0]["image"]}} alt="Space">
-
-    </li>
-
-    
+    {% endfor %}
     
   </ul>
   <nav class="orbit-bullets" style="margin-top:20px;">
     <button class="is-active" data-slide="0"><span class="show-for-sr">First slide details.</span><span class="show-for-sr">Current Slide</span></button>
     
-    <button data-slide="1"><span class="show-for-sr">Slide Details</span></button>
-   	<button data-slide="2"><span class="show-for-sr">Slide Details</span></button>
+    {% for m in range(total-1) %} 
+    <button data-slide={{m}}><span class="show-for-sr">Slide Details</span></button>
+   	{% endfor %}
 
-    
+
   </nav>
 </div>
 

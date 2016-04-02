@@ -4,7 +4,7 @@ from flask.ext.login import LoginManager, login_user, logout_user, login_require
 from flask.ext.mongoengine.wtf import model_form
 from wtforms import PasswordField
 import datetime
-
+from datetime import *
 from flask_mail import Mail, Message
 import requests.packages.urllib3
 #requests.packages.urllib3.disable_warnings()
@@ -29,7 +29,7 @@ app.config.update(dict(
 
 mailer = Mail(app)
 
-now = datetime.datetime.now()
+now = datetime.now()
 
 
 login_manager = LoginManager()
@@ -98,17 +98,44 @@ def hello():
 
 
 	month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
-	print now.year 
-	print month_dict[now.month]
-	url = "https://api.seatgeek.com/2/events?q=" + month_dict[now.month] + " " + str(now.year) +"&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+	start_date = datetime.today().strftime('%Y-%m-%d')
+	date_1 = datetime.strptime(start_date, "%Y-%m-%d")
+	end_date = date_1 + (timedelta(days=60))
+	date_1 = date_1.strftime('%Y-%m-%d')
+	end_date = end_date.strftime('%Y-%m-%d')
+
+	url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+	
 	response_dict = requests.get(url).json()
 	total = response_dict["meta"]["total"]
-	print total
-	count = min(total, 10)
+
+	if total > 100:
+		url = url + "&per_page=100"
+	else:
+		url = url + "&per_page=" + str(total)
 	
+	response_dict= requests.get(url).json()
+	count = min(total, 10)
+	image_list = []
+	title_list = []
+	id_list = []
+	event_count = 0
+	i = 0
+	
+	while event_count < count:
+
+		if response_dict["events"][i]["performers"][0]["image"]:
+			image_list.append(response_dict["events"][i]["performers"][0]["image"])
+			title_list.append(response_dict["events"][i]["title"])
+			id_list.append(response_dict["events"][i]["id"])
+			event_count= event_count+1
+			i = i +1
+
+		else:
+			i = i + 1
 
 
-	return render_template("hello.html", current_user=current_user, response_dict=response_dict, total=count)
+	return render_template("hello.html", current_user=current_user, total=count, image_list=image_list, title_list=title_list, id_list=id_list)
 	
 
 
@@ -129,7 +156,6 @@ def search():
 			url = "https://api.seatgeek.com/2/events?" + "q=" + request.form["user_search"] + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
 		
 		response_dict = requests.get(url).json()
-		print response_dict
 		total = response_dict["meta"]["total"]
 		url = url + "&per_page=" + str(total)
 		response_dict = requests.get(url).json()
@@ -160,7 +186,7 @@ def search():
 
         	
 		num_events= len(date_list)
-		print url
+		
 		return render_template("results.html", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
 	else: 
 		return render_template("search.html")
