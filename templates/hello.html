@@ -8,7 +8,7 @@
 
 {% block body %}
 {% if current_user.is_authenticated %}
-	<h1 style="padding-bottom:0px;">Welcome Back {{current_user.Email}}!</h1>
+	<h1 style="padding-bottom:0px;">Welcome Back {{current_user.Username}}!</h1>
 	<p style="padding:0px; margin-bottom:0px;">View your favorites or search for new events below</p>
 	<a href="/favorites" style="margin-top:0px;padding-top: 0px;"><button class="launch-button">Your Favorites</button></a>
 	<a href="/search"><button class="launch-button">Search</button></a>
