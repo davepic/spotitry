@@ -128,6 +128,7 @@ def hello():
 	date_list= []
 	time_list= []
 	id_list = []
+	
 	location_list = []
 	venue_list= []
 	event_count = 0
@@ -141,6 +142,7 @@ def hello():
 			id_list.append(response_dict["events"][i]["id"])
 			venue_list.append(response_dict["events"][i]["venue"]["name"])
 			location_list.append(response_dict["events"][i]["venue"]["display_location"])
+			
 			date_str = ""
 			time_str = ""
 			mystr = ""
@@ -168,7 +170,7 @@ def hello():
 			i = i + 1
 
 
-	return render_template("hello.html", current_user=current_user, total=count, venue_list= venue_list, location_list=location_list, date_list=date_list, time_list=time_list, image_list=image_list, title_list=title_list, id_list=id_list)
+	return render_template("hello.html",  current_user=current_user, total=count, venue_list= venue_list, location_list=location_list, date_list=date_list, time_list=time_list, image_list=image_list, title_list=title_list, id_list=id_list)
 	
 
 
@@ -223,6 +225,43 @@ def search():
 		return render_template("results.html", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
 	else: 
 		return render_template("search.html")
+
+
+@app.route("/events/<id>")
+def event(id):
+	event_url = "https://api.seatgeek.com/2/events/" + id
+	event_dict = requests.get(event_url).json()
+
+	date_list= []
+	time_list = []
+	price_list = []
+
+	date_str = ""
+	time_str = ""
+	mystr = ""
+	temp_list=[]
+	mystr = event_dict["datetime_local"]
+	mystr = mystr.replace('-', ' ')
+	mystr = mystr.replace('T', ' ')
+	temp_list = (mystr.split(' '))
+	date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
+
+	if int(temp_list[3][:2]) > 12:
+
+		time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
+
+	else:
+
+		time_str = temp_list[3][:5] + " AM"
+       
+	date_list.append(date_str)
+	time_list.append(time_str)
+
+	price_list.append((str(event_dict["stats"]["average_price"])+'0', str(event_dict["stats"]["lowest_price"])+'0', str(event_dict["stats"]["highest_price"])+'0'))
+
+	
+	
+	return render_template("event.html", price_list=price_list, api_data=event_dict, time_list=time_list, date_list=date_list)
 
 
 @app.route("/favorite/<id>")
