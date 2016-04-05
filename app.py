@@ -7,12 +7,6 @@ import datetime
 from datetime import *
 from flask_mail import Mail, Message
 import requests.packages.urllib3
-#requests.packages.urllib3.disable_warnings()
-
-
-
-
-
 
 
 app = Flask(__name__)
@@ -97,7 +91,6 @@ class FavoriteEvent(db.Document):
 
 @app.route("/")
 def hello():
-
 
 	month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 	start_date = datetime.today().strftime('%Y-%m-%d')
