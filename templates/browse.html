@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} {{category}} Browser {% endblock %}
+
+
+
+{% block body %}
+
+	<h1>{{category}} Browser</h1>
+	<form action="/browse/sports" method="POST">
+
+	<div class="small-12 columns">
+		<input type="text" placeholder="Enter search state" name="user_search"/>
+	</div>
+	<div class="small-12 columns">
+		<button class="postfix search-button"type="submit">Search</button>
+	</div>
+
+	
+
+
+
+	{% block results %}{% endblock %}
+
+	</form>
+
+{% endblock %}

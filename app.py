@@ -220,6 +220,70 @@ def search():
 		return render_template("search.html")
 
 
+
+@app.route("/browse/sports", methods=["POST", "GET"])
+@login_required
+def sports_browse():
+	if request.method == "POST":
+		print "yes"
+		total = 0
+		date_list= []
+		time_list = []
+		price_list = []
+
+
+		month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
+		start_date = datetime.today().strftime('%Y-%m-%d')
+		date_1 = datetime.strptime(start_date, "%Y-%m-%d")
+		end_date = date_1 + (timedelta(days=120))
+		date_1 = date_1.strftime('%Y-%m-%d')
+		end_date = end_date.strftime('%Y-%m-%d')
+		
+		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["user_search"] + "&taxonomies.name=sports&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+        
+		print url
+		
+		response_dict = requests.get(url).json()
+		total = response_dict["meta"]["total"]
+		url = url + "&per_page=" + str(total)
+		response_dict = requests.get(url).json()
+
+		for event in response_dict["events"]:
+			date_str = ""
+			time_str = ""
+			mystr = ""
+			temp_list=[]
+			mystr = event["datetime_local"]
+			mystr = mystr.replace('-', ' ')
+			mystr = mystr.replace('T', ' ')
+			temp_list = (mystr.split(' '))
+			date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
+
+			if int(temp_list[3][:2]) > 12:
+
+				time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
+
+			else:
+
+				time_str = temp_list[3][:5] + " AM"
+       
+			date_list.append(date_str)
+			time_list.append(time_str)
+
+			price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
+
+        	
+		num_events= len(date_list)
+		print num_events
+
+		return render_template("browse_results.html", category="Sports", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
+	else: 
+
+		return render_template("browse.html", category="Sports")
+
+
+
+
 @app.route("/events/<id>")
 def event(id):
 	event_url = "https://api.seatgeek.com/2/events/" + id
@@ -329,6 +393,7 @@ def login():
 	else:
 
 		return render_template('login.html', form=form)
+
 
 @app.route("/logout")
 def logout():
