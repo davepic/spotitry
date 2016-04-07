@@ -221,9 +221,9 @@ def search():
 
 
 
-@app.route("/browse/sports", methods=["POST", "GET"])
+@app.route("/browse", methods=["POST", "GET"])
 @login_required
-def sports_browse():
+def browse():
 	if request.method == "POST":
 		
 		total = 0
@@ -235,52 +235,58 @@ def sports_browse():
 		month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 		start_date = datetime.today().strftime('%Y-%m-%d')
 		date_1 = datetime.strptime(start_date, "%Y-%m-%d")
-		end_date = date_1 + (timedelta(days=120))
+		end_date = date_1 + (timedelta(days=int(request.form["num_days"])))
 		date_1 = date_1.strftime('%Y-%m-%d')
 		end_date = end_date.strftime('%Y-%m-%d')
+
 		
-		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["user_search"] + "&taxonomies.name=sports&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["state_search"] + "&taxonomies.name=" + request.form["category_search"]+ "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
         
 		
 		
 		response_dict = requests.get(url).json()
 		total = response_dict["meta"]["total"]
 		url = url + "&per_page=" + str(total)
-		response_dict = requests.get(url).json()
 
-		for event in response_dict["events"]:
-			date_str = ""
-			time_str = ""
-			mystr = ""
-			temp_list=[]
-			mystr = event["datetime_local"]
-			mystr = mystr.replace('-', ' ')
-			mystr = mystr.replace('T', ' ')
-			temp_list = (mystr.split(' '))
-			date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
+		if total>0:
+			response_dict = requests.get(url).json()
 
-			if int(temp_list[3][:2]) > 12:
+			for event in response_dict["events"]:
+				date_str = ""
+				time_str = ""
+				mystr = ""
+				temp_list=[]
+				mystr = event["datetime_local"]
+				mystr = mystr.replace('-', ' ')
+				mystr = mystr.replace('T', ' ')
+				temp_list = (mystr.split(' '))
+				date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
 
-				time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
+				if int(temp_list[3][:2]) > 12:
 
-			else:
+					time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
 
-				time_str = temp_list[3][:5] + " AM"
+				else:
+
+					time_str = temp_list[3][:5] + " AM"
        
-			date_list.append(date_str)
-			time_list.append(time_str)
+				date_list.append(date_str)
+				time_list.append(time_str)
 
-			price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
+				price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
 
         	
-		num_events= len(date_list)
+			num_events= len(date_list)
 		
 
-		return render_template("browse_results.html", category="Sports", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
+			return render_template("browse_results.html", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
+		else:
+
+			return render_template("browse.html", failed=True)
+
 	else: 
 
-		return render_template("browse.html", category="Sports")
-
+		return render_template("browse.html", failed=False)
 
 
 

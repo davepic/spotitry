@@ -1,12 +1,18 @@
 {% extends "base.html" %}
-{% block title %} {{category}} Browser {% endblock %}
+{% block title %} Browser {% endblock %}
 
 
 
 {% block body %}
 
-	<h1>{{category}} Browser</h1>
-	<form action="/browse/sports" method="POST">
+	<h1>Browser</h1>
+
+	{% if failed %}
+
+		<p style="color:red;">No events matched your search. Please try again</p>
+
+	{% endif %}
+	<form action="/browse" method="POST">
 
 	<!--<div class="small-12 columns">
 		<input type="text" placeholder="Enter search state" name="user_search" required="True"/>
@@ -14,8 +20,20 @@
 
 	!-->
 
-	<select name="user_search" style="width:15%; margin:0 auto; margin-bottom:10px;" required>
-	<option value="" selected>Select Browse State</option>
+
+<select name="category_search" style="width:15%; margin:0 auto; margin-bottom:10px;" required>
+	
+	<option value="" selected>Select Category</option>
+	<option value="concert">Concerts</option>
+	<option value="sport">Sports</option>
+	<option value="comedy">Comedy</option>
+	<option value="theater">Theater</option>
+	
+</select>	
+
+<select name="state_search" style="width:15%; margin:0 auto; margin-bottom:10px;" required>
+
+	<option value="" selected>Select State</option>
 	<option value="AL">Alabama</option>
 	<option value="AK">Alaska</option>
 	<option value="AZ">Arizona</option>
@@ -67,17 +85,35 @@
 	<option value="WV">West Virginia</option>
 	<option value="WI">Wisconsin</option>
 	<option value="WY">Wyoming</option>
+
 </select>		
-	<div style="display:inline;">
-		<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Search</button>
-	</div>
+
+<input name="num_days" type="number" min="1" max="20" step="1" value="1" style="width:15%; margin:0 auto; margin-bottom:10px;display:inline;"></input>
+
+<select name="sort_by" style="width:15%; margin:0 auto; margin-bottom:10px;" required>
+	
+	<option value="" selected>Sort Results By</option>
+	<option value="datetime_local.asc">Date Ascending</option>
+	<option value="datetime_local.desc">Date Descending</option>
+	<option value="score.desc">Most Popular</option>
+	<option value="score.asc">Least Popular</option>
+	
+</select>	
+
+
+
+
+
+<div style="display:inline;">
+	<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Search</button>
+</div>
 
 	
 
 
 
-	{% block results %}{% endblock %}
+{% block results %}{% endblock %}
 
-	</form>
+</form>
 
 {% endblock %}
