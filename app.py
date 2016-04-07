@@ -225,7 +225,7 @@ def search():
 @login_required
 def sports_browse():
 	if request.method == "POST":
-		print "yes"
+		
 		total = 0
 		date_list= []
 		time_list = []
@@ -241,7 +241,7 @@ def sports_browse():
 		
 		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["user_search"] + "&taxonomies.name=sports&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
         
-		print url
+		
 		
 		response_dict = requests.get(url).json()
 		total = response_dict["meta"]["total"]
@@ -274,7 +274,7 @@ def sports_browse():
 
         	
 		num_events= len(date_list)
-		print num_events
+		
 
 		return render_template("browse_results.html", category="Sports", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
 	else: 
