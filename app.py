@@ -279,7 +279,7 @@ def browse():
 			num_events= len(date_list)
 		
 
-			return render_template("browse_results.html", category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["num_days"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
+			return render_template("browse_results.html", category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
 		else:
 
 			return render_template("browse.html", failed=True)
