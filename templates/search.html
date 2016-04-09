@@ -6,27 +6,116 @@
 {% block body %}
 
 	<h1>Search</h1>
+
+	{% if failed %}
+
+		<p style="color:red;">No events matched your search. Please try again</p>
+
+	{% endif %}
 	<form action="/search" method="POST">
 
-	<div class="small-12 columns">
+	
 
-		<input type="text" placeholder="Enter event description" name="user_search"/>
+	
+<input type="text" placeholder="Search events (optional)" name="user_search" style="width:35%; margin:0 auto; margin-bottom:10px;display:inline;"/>
 
-	</div>
+<select name="category_search" style="width:12%; margin:0 auto; margin-bottom:10px;" required>
+	
+	<option value="" selected>Select Category</option>
+	<option value="concert">Concerts</option>
+	<option value="sports">Sports</option>
+	<option value="comedy">Comedy</option>
+	<option value="theater">Theater</option>
+	
+</select>	
 
-	<div class="small-12 columns">
-		<input type="text" placeholder="Enter event location" name="other_search"/>
-	</div>
-	<div class="small-12 columns">
-		<button class="postfix search-button"type="submit">Search</button>
-	</div>
+
+
+
+
+<select name="state_search" style="width:10%; margin:0 auto; margin-bottom:10px;" required>
+
+	<option value="" selected>Select State</option>
+	<option value="AL">Alabama</option>
+	<option value="AK">Alaska</option>
+	<option value="AZ">Arizona</option>
+	<option value="AR">Arkansas</option>
+	<option value="CA">California</option>
+	<option value="CO">Colorado</option>
+	<option value="CT">Connecticut</option>
+	<option value="DE">Delaware</option>
+	<option value="DC">District Of Columbia</option>
+	<option value="FL">Florida</option>
+	<option value="GA">Georgia</option>
+	<option value="HI">Hawaii</option>
+	<option value="ID">Idaho</option>
+	<option value="IL">Illinois</option>
+	<option value="IN">Indiana</option>
+	<option value="IA">Iowa</option>
+	<option value="KS">Kansas</option>
+	<option value="KY">Kentucky</option>
+	<option value="LA">Louisiana</option>
+	<option value="ME">Maine</option>
+	<option value="MD">Maryland</option>
+	<option value="MA">Massachusetts</option>
+	<option value="MI">Michigan</option>
+	<option value="MN">Minnesota</option>
+	<option value="MS">Mississippi</option>
+	<option value="MO">Missouri</option>
+	<option value="MT">Montana</option>
+	<option value="NE">Nebraska</option>
+	<option value="NV">Nevada</option>
+	<option value="NH">New Hampshire</option>
+	<option value="NJ">New Jersey</option>
+	<option value="NM">New Mexico</option>
+	<option value="NY">New York</option>
+	<option value="NC">North Carolina</option>
+	<option value="ND">North Dakota</option>
+	<option value="OH">Ohio</option>
+	<option value="OK">Oklahoma</option>
+	<option value="OR">Oregon</option>
+	<option value="PA">Pennsylvania</option>
+	<option value="RI">Rhode Island</option>
+	<option value="SC">South Carolina</option>
+	<option value="SD">South Dakota</option>
+	<option value="TN">Tennessee</option>
+	<option value="TX">Texas</option>
+	<option value="UT">Utah</option>
+	<option value="VT">Vermont</option>
+	<option value="VA">Virginia</option>
+	<option value="WA">Washington</option>
+	<option value="WV">West Virginia</option>
+	<option value="WI">Wisconsin</option>
+	<option value="WY">Wyoming</option>
+
+</select>		
+
+<input name="num_days" type="number" min="1" max="20" step="1" value="1" style="width:auto; margin:0 auto; margin-bottom:10px;display:inline;"></input>
+
+<select name="sort_by" style="width:12%; margin:0 auto; margin-bottom:10px;" required>
+	
+	<option value="" selected>Sort Results By</option>
+	<option value="datetime_local.asc">Date Ascending</option>
+	<option value="datetime_local.desc">Date Descending</option>
+	<option value="score.desc">Most Popular</option>
+	<option value="score.asc">Least Popular</option>
+	
+</select>	
+
+
+
+
+
+<div style="display:inline;">
+	<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Search</button>
+</div>
 
 	
 
 
 
-	{% block results %}{% endblock %}
+{% block results %}{% endblock %}
 
-	</form>
+</form>
 
 {% endblock %}

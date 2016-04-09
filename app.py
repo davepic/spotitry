@@ -168,62 +168,10 @@ def hello():
 
 
 
+
 @app.route("/search", methods=["POST", "GET"])
 @login_required
 def search():
-	if request.method == "POST":
-		total = 0
-		date_list= []
-		time_list = []
-		price_list = []
-
-		if request.form["other_search"]:
-			url = "https://api.seatgeek.com/2/events?venue.state=" + request.form["other_search"] + "&q=" + request.form["user_search"] + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-        
-		else:
-			url = "https://api.seatgeek.com/2/events?" + "q=" + request.form["user_search"] + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-		
-		response_dict = requests.get(url).json()
-		total = response_dict["meta"]["total"]
-		url = url + "&per_page=" + str(total)
-		response_dict = requests.get(url).json()
-
-		for event in response_dict["events"]:
-			date_str = ""
-			time_str = ""
-			mystr = ""
-			temp_list=[]
-			mystr = event["datetime_local"]
-			mystr = mystr.replace('-', ' ')
-			mystr = mystr.replace('T', ' ')
-			temp_list = (mystr.split(' '))
-			date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
-
-			if int(temp_list[3][:2]) > 12:
-
-				time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
-
-			else:
-
-				time_str = temp_list[3][:5] + " AM"
-       
-			date_list.append(date_str)
-			time_list.append(time_str)
-
-			price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
-
-        	
-		num_events= len(date_list)
-		
-		return render_template("results.html", price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
-	else: 
-		return render_template("search.html")
-
-
-
-@app.route("/browse", methods=["POST", "GET"])
-@login_required
-def browse():
 	if request.method == "POST":
 		
 		total = 0
@@ -246,7 +194,13 @@ def browse():
 		
 		response_dict = requests.get(url).json()
 		total = response_dict["meta"]["total"]
+
+		if request.form["user_search"]:
+			url = url + "&q=" + request.form["user_search"]
+
 		url = url + "&per_page=" + str(total)
+
+
 
 		if total>0:
 			response_dict = requests.get(url).json()
@@ -279,14 +233,14 @@ def browse():
 			num_events= len(date_list)
 		
 
-			return render_template("browse_results.html", category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
+			return render_template("results.html", user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
 		else:
 
-			return render_template("browse.html", failed=True)
+			return render_template("search.html", failed=True)
 
 	else: 
 
-		return render_template("browse.html", failed=False)
+		return render_template("search.html", failed=False)
 
 
 
