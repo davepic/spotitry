@@ -6,8 +6,13 @@ from wtforms import PasswordField
 import datetime
 from datetime import *
 from flask_mail import Mail, Message
+from flask import Blueprint
 import requests.packages.urllib3
 
+from flask.ext.paginate import Pagination
+
+
+mod = Blueprint('events', __name__)
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -193,17 +198,30 @@ def search():
 		
 		
 		response_dict = requests.get(url).json()
+		try:
+			page = int(request.args.get('page', 1))
+		except ValueError:
+			page = 1
+
+
+
+
 		total = response_dict["meta"]["total"]
+
+
 
 		if request.form["user_search"]:
 			url = url + "&q=" + request.form["user_search"]
 
 		url = url + "&per_page=" + str(total)
 
-
+		
 
 		if total>0:
 			response_dict = requests.get(url).json()
+
+
+			pagination = Pagination(page=page, total = response_dict["meta"]["total"], search=True, per_page=10, show_single_page=True, record_name="events")
 
 			for event in response_dict["events"]:
 				date_str = ""
@@ -232,8 +250,8 @@ def search():
         	
 			num_events= len(date_list)
 		
-
-			return render_template("results.html", user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events)
+			print total
+			return render_template("results.html", events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 		else:
 
 			return render_template("search.html", failed=True)
@@ -310,6 +328,7 @@ def favorites():
 
 	current_poster = newUser.objects(Email=current_user.Email).first()
 	favorites = FavoriteEvent.objects(poster=current_poster)
+
 	return render_template("favorites.html", current_user = current_user, favorites=favorites)
 
 
