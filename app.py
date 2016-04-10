@@ -209,7 +209,7 @@ def search():
         
 		
 		
-		response_dict = requests.get(url).json()
+		
 		try:
 			page = int(request.args.get('page', 1))
 		except ValueError:
@@ -218,7 +218,7 @@ def search():
 
 
 
-		total = response_dict["meta"]["total"]
+		
 
 
 
@@ -227,8 +227,11 @@ def search():
 
 		url = url + "&page="+str(page)
 
-		print url
+		response_dict = requests.get(url).json()
 
+
+		
+		total = response_dict["meta"]["total"]
 		if request.form["user_search"]:
 
 			new_search = SearchData(total = total, num_days= int(request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
