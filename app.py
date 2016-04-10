@@ -92,6 +92,15 @@ class FavoriteEvent(db.Document):
 	poster = db.ReferenceField(newUser)
 
 
+class SearchData(db.Document):
+	user_search = db.StringField(required=False)
+	category = db.StringField(required=True)
+	state = db.StringField(required=True)
+	num_days = db.IntField(required=True)
+	sort_by = db.StringField(required=True)
+	total = db.IntField(required=True)
+
+
 
 
 @app.route("/")
@@ -178,7 +187,10 @@ def hello():
 @login_required
 def search():
 	if request.method == "POST":
-		
+
+		for data in SearchData.objects:
+			data.delete()
+
 		total = 0
 		date_list= []
 		time_list = []
@@ -213,15 +225,28 @@ def search():
 		if request.form["user_search"]:
 			url = url + "&q=" + request.form["user_search"]
 
-		url = url + "&per_page=" + str(total)
+		url = url + "&page="+str(page)
 
-		
+		print url
+
+		if request.form["user_search"]:
+
+			new_search = SearchData(total = total, num_days= int(request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+		else:
+			new_search = SearchData(total = total, num_days= int(request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+
+
+		new_search.save()
+
+
+
 
 		if total>0:
 			response_dict = requests.get(url).json()
+        	
 
-
-			pagination = Pagination(page=page, total = response_dict["meta"]["total"], search=True, per_page=10, show_single_page=True, record_name="events")
+			pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
+			
 
 			for event in response_dict["events"]:
 				date_str = ""
@@ -250,13 +275,100 @@ def search():
         	
 			num_events= len(date_list)
 		
-			print total
+			
 			return render_template("results.html", events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 		else:
 
 			return render_template("search.html", failed=True)
 
-	else: 
+	elif request.args.get('page'): 
+
+		total = 0
+		date_list= []
+		time_list = []
+		price_list = []
+
+
+		month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
+		start_date = datetime.today().strftime('%Y-%m-%d')
+		date_1 = datetime.strptime(start_date, "%Y-%m-%d")
+		end_date = date_1 + (timedelta(days=int(SearchData.objects.first().num_days)))
+		date_1 = date_1.strftime('%Y-%m-%d')
+		end_date = end_date.strftime('%Y-%m-%d')
+
+		
+		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + SearchData.objects.first().state + "&taxonomies.name=" + SearchData.objects.first().category+ "&sort=" + SearchData.objects.first().sort_by+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+        
+		
+		
+		response_dict = requests.get(url).json()
+		try:
+			page = int(request.args.get('page', 1))
+		except ValueError:
+			page = 1
+
+
+
+
+		total = SearchData.objects.first().total
+
+
+
+		if SearchData.objects.first().user_search:
+			url = url + "&q=" + SearchData.objects.first().user_search
+
+		url = url + "&page="+str(page)
+
+		print url
+
+
+
+
+		if total>0:
+			response_dict = requests.get(url).json()
+        	
+
+			pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
+			
+
+			for event in response_dict["events"]:
+				date_str = ""
+				time_str = ""
+				mystr = ""
+				temp_list=[]
+				mystr = event["datetime_local"]
+				mystr = mystr.replace('-', ' ')
+				mystr = mystr.replace('T', ' ')
+				temp_list = (mystr.split(' '))
+				date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
+
+				if int(temp_list[3][:2]) > 12:
+
+					time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
+
+				else:
+
+					time_str = temp_list[3][:5] + " AM"
+       
+				date_list.append(date_str)
+				time_list.append(time_str)
+
+				price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
+
+        	
+			num_events= len(date_list)
+		
+			
+			return render_template("results.html", events=response_dict["events"], user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+		else:
+
+			return render_template("search.html", failed=True)
+
+		
+
+
+
+	else:
 
 		return render_template("search.html", failed=False)
 

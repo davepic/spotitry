@@ -8,7 +8,6 @@
 	<h1>Search</h1>
 	{{pagination.info}}
 	{{pagination.links}}
-
 	{% if failed %}
 
 		<p style="color:red;">No events matched your search. Please try again</p>
@@ -187,6 +186,7 @@
 		
 		{% for n in range(num_events)%}
 		
+
 		<div class="row" style="width:99.5%;">
 		<div class="small-12 columns" >
 		<ul class="results" style="border-style: solid; border-color: #00688B; border-width:2px; margin-top:20px; margin-bottom: 20px; padding-top: 10px;height: 270px; background-color: rgba(188,210,238, .9);">
