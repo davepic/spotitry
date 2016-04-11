@@ -90,7 +90,17 @@
 
 </select>		
 
-<input name="num_days" type="number" min="1" max="20" step="1" value="1" style="width:auto; margin:0 auto; margin-bottom:10px;display:inline;"></input>
+<!--<input name="num_days" type="number" min="1" max="20" step="1" value="1" style="width:auto; margin:0 auto; margin-bottom:10px;display:inline;"></input> !-->
+
+<select name="num_days" style="width:10%; margin:0 auto; margin-bottom:10px;display:inline;" required>	
+
+	<option value = "">Date Range</option>
+	<option value="1">Today</option>
+	<option value="7">One Week</option>
+	<option value="30">One Month</option>
+	<option value="365">One Year</option>
+
+</select>
 
 <select name="sort_by" style="width:12%; margin:0 auto; margin-bottom:10px;" required>
 	

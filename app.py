@@ -95,7 +95,7 @@ class SearchData(db.Document):
 	user_search = db.StringField(required=False)
 	category = db.StringField(required=True)
 	state = db.StringField(required=True)
-	num_days = db.IntField(required=True)
+	num_days = db.StringField(required=True)
 	sort_by = db.StringField(required=True)
 	total = db.IntField(required=True)
 	poster = db.StringField(required=True)
@@ -243,9 +243,9 @@ def search():
 		
 		if request.form["user_search"]:
 
-			new_search = SearchData(poster= current_user.Email, total = total, num_days= int(request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+			new_search = SearchData(poster= current_user.Email, total = total, num_days= (request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 		else:
-			new_search = SearchData(poster= current_user.Email, total = total, num_days= int(request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+			new_search = SearchData(poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 
 
 		new_search.save()
