@@ -99,6 +99,7 @@ class SearchData(db.Document):
 	num_days = db.IntField(required=True)
 	sort_by = db.StringField(required=True)
 	total = db.IntField(required=True)
+	poster = db.StringField(required=True)
 
 
 
@@ -116,6 +117,9 @@ def hello():
 	if current_user.is_authenticated:
 		
 		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" +current_user.State + "&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+		for data in SearchData.objects(poster=current_user.Email):
+			data.delete()
+
 	else:
 		
 		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&sort=score.desc" + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
@@ -188,8 +192,10 @@ def hello():
 def search():
 	if request.method == "POST":
 
-		for data in SearchData.objects:
-			data.delete()
+		if SearchData.objects(poster=current_user.Email).first():
+
+			for data in SearchData.objects(poster=current_user.Email).first():
+				data.delete()
 
 		total = 0
 		date_list= []
@@ -232,11 +238,15 @@ def search():
 
 		
 		total = response_dict["meta"]["total"]
+
+		
+		
+		
 		if request.form["user_search"]:
 
-			new_search = SearchData(total = total, num_days= int(request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+			new_search = SearchData(poster= current_user.Email, total = total, num_days= int(request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 		else:
-			new_search = SearchData(total = total, num_days= int(request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+			new_search = SearchData(poster= current_user.Email, total = total, num_days= int(request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 
 
 		new_search.save()
@@ -284,7 +294,7 @@ def search():
 
 			return render_template("search.html", failed=True)
 
-	elif request.args.get('page'): 
+	elif request.args.get('page') or SearchData.objects.first(): 
 
 		total = 0
 		date_list= []
@@ -379,6 +389,10 @@ def search():
 
 @app.route("/events/<id>")
 def event(id):
+
+	for data in SearchData.objects(poster=current_user.Email):
+		data.delete()
+
 	event_url = "https://api.seatgeek.com/2/events/" + id
 	event_dict = requests.get(event_url).json()
 
@@ -418,6 +432,11 @@ def event(id):
 @login_required
 
 def favorite(id):
+
+	for data in SearchData.objects(poster=current_poster):
+		data.delete()
+
+
 	event_url = "https://api.seatgeek.com/2/events/" + id
 	event_dict = requests.get(event_url).json()
 	poster = newUser.objects(Email=current_user.Email).first()
@@ -443,6 +462,9 @@ def favorites():
 
 	current_poster = newUser.objects(Email=current_user.Email).first()
 	favorites = FavoriteEvent.objects(poster=current_poster)
+
+	for data in SearchData.objects(poster=current_user.Email):
+		data.delete()
 
 	return render_template("favorites.html", current_user = current_user, favorites=favorites)
 
@@ -480,6 +502,9 @@ def login():
 
 			user = newUser(Email=form.Email.data, Password=form.Password.data)
 			login_user(user)
+
+			for data in SearchData.objects(poster=current_user.Email):
+				data.delete()
 			return redirect('/')
 
 		else:
@@ -491,6 +516,9 @@ def login():
 
 @app.route("/logout")
 def logout():
+
+	for data in SearchData.objects(poster=current_user.Email):
+		data.delete()
 
 	logout_user()
 	return render_template('logout.html')
