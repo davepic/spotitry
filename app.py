@@ -6,13 +6,12 @@ from wtforms import PasswordField
 import datetime
 from datetime import *
 from flask_mail import Mail, Message
-from flask import Blueprint
 import requests.packages.urllib3
 
 from flask.ext.paginate import Pagination
 
 
-mod = Blueprint('events', __name__)
+
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -192,9 +191,9 @@ def hello():
 def search():
 	if request.method == "POST":
 
-		if SearchData.objects(poster=current_user.Email).first():
+		if SearchData.objects(poster=current_user.Email):
 
-			for data in SearchData.objects(poster=current_user.Email).first():
+			for data in SearchData.objects(poster=current_user.Email):
 				data.delete()
 
 		total = 0
@@ -332,7 +331,7 @@ def search():
 
 		url = url + "&page="+str(page)
 
-		print url
+		
 
 
 
