@@ -441,7 +441,6 @@ def favorite(id):
 	event_dict = requests.get(event_url).json()
 	poster = newUser.objects(Email=current_user.Email).first()
 	if FavoriteEvent.objects(poster=poster, event_id=id).count() == 0:
-		print event_dict["venue"]["display_location"]
 		new_fav = FavoriteEvent(location_name= event_dict["venue"]["display_location"], avg_px = event_dict["stats"]["average_price"], min_px= event_dict["stats"]["lowest_price"], max_px=event_dict["stats"]["highest_price"], num_tix= event_dict["stats"]["highest_price"], picture= event_dict["performers"][0]["image"], title=event_dict["title"], date_time=event_dict["datetime_local"], location=event_dict["venue"]["name"], event_id=event_dict["id"], link=event_dict["url"], poster=poster)
 		new_fav.save()
 		return render_template("confirm.html", api_data=event_dict, err=False)

@@ -6,13 +6,12 @@
 {% if current_user.is_authenticated %}
 	<h1 style="padding-bottom:0px;">Welcome Back {{current_user.Username}}!</h1>
 	<p style="padding:0px; margin-bottom:0px;">Here are some of the most popular events in {{current_user.State}}</p>
-	<!--<a href="/favorites" style="margin-top:0px;padding-top: 0px;"><button class="launch-button">Your Favorites</button></a>
-	<a href="/search"><button class="launch-button">Search</button></a> !-->
+	
 
 {% else %}
 	
-	<h1>Welcome!</h1>
-	<p>Register or sign in below to add events to your favorites</p>
+	<h1 style="padding-bottom:0px;">Welcome!</h1>
+	<p style="padding:0px; margin-bottom:0px;">Register or sign in below to add events to your favorites</p>
 	<a href="/login"><button class="launch-button">Login</button></a>
 	<a href="/register"><button class="launch-button">Register</button></a>
 
