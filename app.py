@@ -88,6 +88,7 @@ class FavoriteEvent(db.Document):
 	max_px = db.IntField(required=False)
 	num_tix = db.IntField(required=False)
 	picture = db.StringField(required=False)
+	location_name = db.StringField(required=False)
 	poster = db.ReferenceField(newUser)
 
 
@@ -440,7 +441,7 @@ def favorite(id):
 	event_dict = requests.get(event_url).json()
 	poster = newUser.objects(Email=current_user.Email).first()
 	if FavoriteEvent.objects(poster=poster, event_id=id).count() == 0:
-		new_fav = FavoriteEvent(avg_px = event_dict["stats"]["average_price"], min_px= event_dict["stats"]["lowest_price"], max_px=event_dict["stats"]["highest_price"], num_tix= event_dict["stats"]["highest_price"], picture= event_dict["performers"][0]["image"], title=event_dict["title"], date_time=event_dict["datetime_local"], location=event_dict["venue"]["name"], event_id=event_dict["id"], link=event_dict["url"], poster=poster)
+		new_fav = FavoriteEvent(location_name= event_dict["venue"]["display_location"], avg_px = event_dict["stats"]["average_price"], min_px= event_dict["stats"]["lowest_price"], max_px=event_dict["stats"]["highest_price"], num_tix= event_dict["stats"]["highest_price"], picture= event_dict["performers"][0]["image"], title=event_dict["title"], date_time=event_dict["datetime_local"], location=event_dict["venue"]["name"], event_id=event_dict["id"], link=event_dict["url"], poster=poster)
 		new_fav.save()
 		return render_template("confirm.html", api_data=event_dict, err=False)
 	return render_template("confirm.html", api_data=event_dict, err=True)
@@ -461,6 +462,37 @@ def favorites():
 
 	current_poster = newUser.objects(Email=current_user.Email).first()
 	favorites = FavoriteEvent.objects(poster=current_poster)
+
+	date_list= []
+	time_list = []
+	price_list = []
+
+	for favorite in favorites:
+
+		date_str = ""
+		time_str = ""
+		mystr = ""
+		temp_list=[]
+		mystr = favorite.date_time
+		mystr = mystr.replace('-', ' ')
+		mystr = mystr.replace('T', ' ')
+		temp_list = (mystr.split(' '))
+		date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
+
+		if int(temp_list[3][:2]) > 12:
+
+			time_str =  str(int(temp_list[3][:2])-12) + temp_list[3][2:5] + " PM"
+
+		else:
+
+			time_str = temp_list[3][:5] + " AM"
+       
+		favorite.date_time= date_str + " " + time_str
+		favorite.save()
+
+		print favorite.date_time
+
+
 
 	for data in SearchData.objects(poster=current_user.Email):
 		data.delete()
