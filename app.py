@@ -7,7 +7,6 @@ import datetime
 from datetime import *
 from flask_mail import Mail, Message
 import requests.packages.urllib3
-
 from flask.ext.paginate import Pagination
 
 
@@ -28,7 +27,6 @@ app.config.update(dict(
 mailer = Mail(app)
 
 now = datetime.now()
-
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -101,9 +99,6 @@ class SearchData(db.Document):
 	total = db.IntField(required=True)
 	poster = db.StringField(required=True)
 
-
-
-
 @app.route("/")
 def hello():
 
@@ -139,7 +134,6 @@ def hello():
 	date_list= []
 	time_list= []
 	id_list = []
-	
 	location_list = []
 	venue_list= []
 	event_count = 0
@@ -185,8 +179,6 @@ def hello():
 	
 
 
-
-
 @app.route("/search", methods=["POST", "GET"])
 @login_required
 def search():
@@ -202,7 +194,6 @@ def search():
 		time_list = []
 		price_list = []
 
-
 		month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 		start_date = datetime.today().strftime('%Y-%m-%d')
 		date_1 = datetime.strptime(start_date, "%Y-%m-%d")
@@ -210,23 +201,12 @@ def search():
 		date_1 = date_1.strftime('%Y-%m-%d')
 		end_date = end_date.strftime('%Y-%m-%d')
 
-		
 		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["state_search"] + "&taxonomies.name=" + request.form["category_search"]+ "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-        
-		
-		
 		
 		try:
 			page = int(request.args.get('page', 1))
 		except ValueError:
 			page = 1
-
-
-
-
-		
-
-
 
 		if request.form["user_search"]:
 			url = url + "&q=" + request.form["user_search"]
@@ -235,32 +215,24 @@ def search():
 
 		response_dict = requests.get(url).json()
 
-
-		
 		total = response_dict["meta"]["total"]
 
-		
-		
-		
 		if request.form["user_search"]:
 
 			new_search = SearchData(poster= current_user.Email, total = total, num_days= (request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+		
 		else:
+			
 			new_search = SearchData(poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
-
 
 		new_search.save()
 
-
-
-
 		if total>0:
-			response_dict = requests.get(url).json()
-        	
 
+			response_dict = requests.get(url).json()
+   
 			pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
 			
-
 			for event in response_dict["events"]:
 				date_str = ""
 				time_str = ""
@@ -309,41 +281,28 @@ def search():
 		date_1 = date_1.strftime('%Y-%m-%d')
 		end_date = end_date.strftime('%Y-%m-%d')
 
-		
 		url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + SearchData.objects.first().state + "&taxonomies.name=" + SearchData.objects.first().category+ "&sort=" + SearchData.objects.first().sort_by+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
         
-		
-		
 		response_dict = requests.get(url).json()
+
 		try:
 			page = int(request.args.get('page', 1))
 		except ValueError:
 			page = 1
 
-
-
-
 		total = SearchData.objects.first().total
-
-
 
 		if SearchData.objects.first().user_search:
 			url = url + "&q=" + SearchData.objects.first().user_search
 
 		url = url + "&page="+str(page)
 
-		
-
-
-
-
 		if total>0:
+
 			response_dict = requests.get(url).json()
-        	
 
 			pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
 			
-
 			for event in response_dict["events"]:
 				date_str = ""
 				time_str = ""
@@ -376,10 +335,6 @@ def search():
 		else:
 
 			return render_template("search.html", failed=True)
-
-		
-
-
 
 	else:
 
@@ -422,8 +377,6 @@ def event(id):
 	time_list.append(time_str)
 
 	price_list.append((str(event_dict["stats"]["average_price"])+'0', str(event_dict["stats"]["lowest_price"])+'0', str(event_dict["stats"]["highest_price"])+'0'))
-
-	
 	
 	return render_template("event.html", price_list=price_list, api_data=event_dict, time_list=time_list, date_list=date_list)
 
@@ -435,7 +388,6 @@ def favorite(id):
 
 	for data in SearchData.objects(poster=current_user.Email):
 		data.delete()
-
 
 	event_url = "https://api.seatgeek.com/2/events/" + id
 	event_dict = requests.get(event_url).json()
@@ -459,11 +411,8 @@ def delete_favorite(id):
 @login_required
 def favorites():
 
-
 	current_poster = newUser.objects(Email=current_user.Email).first()
 	favorites = FavoriteEvent.objects(poster=current_poster)
-
-	
 
 	for favorite in favorites:
 
@@ -478,8 +427,6 @@ def favorites():
 			mystr = mystr.replace('T', ' ')
 			temp_list = (mystr.split(' '))
 			date_str= temp_list[1] + "/" + temp_list[2] + "/" + temp_list[0] + " "
-
-		
 
 			if int(temp_list[3][:2]) > 12:
 
@@ -512,8 +459,6 @@ def register():
 		msg = Message("Thanks for registering, " + form.Username.data, sender="davepiccolella@gmail.com", recipients=[form.Email.data])
 		msg.html= render_template("email.html")
 		mailer.send(msg)
-
-
 
 		return render_template("register_confirm.html", form=form)
 
