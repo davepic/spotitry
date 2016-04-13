@@ -165,6 +165,10 @@ def hello():
 			else:
 
 				time_str = temp_list[3][:5] + " AM"
+
+			if response_dict["events"][i]["time_tbd"]:
+
+				time_str = "Time TBA"
        
 			date_list.append(date_str)
 			time_list.append(time_str)

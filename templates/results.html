@@ -258,7 +258,7 @@
 						<li>
 							<h5 class="blue roberto">
 							
-								{{date_list[n]}} {{time_list[n]}}
+								{{date_list[n]}} {% if api_data["events"][n]["time_tbd"] %}Time TBA{% else %}{{time_list[n]}}{% endif %}
 							
 							</h5>
 
