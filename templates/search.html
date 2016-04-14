@@ -12,11 +12,19 @@
 		<p style="color:red;">No events matched your search. Please try again</p>
 
 	{% endif %}
-	<form action="/search" method="POST">
 
-	
+{% if anonymous %}	
 
-	
+	<p style="color:red;">You must be logged in to Search</p>
+	<a href="/login"><button class="launch-button">Login</button></a>
+	<a href="/register"><button class="launch-button">Register</button></a>
+
+
+{% else %}
+
+<form action="/search" method="POST">
+
+
 <input type="text" placeholder="Search events (optional)" name="user_search" style="width:35%; margin:0 auto; margin-bottom:10px;display:inline;"/>
 
 <select name="category_search" style="width:12%; margin:0 auto; margin-bottom:10px;" required>
@@ -127,5 +135,7 @@
 {% block results %}{% endblock %}
 
 </form>
+
+{% endif %}
 
 {% endblock %}
