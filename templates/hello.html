@@ -38,8 +38,10 @@
     			 <li style="display:inline;">|</li>
     			 <li style="display:inline;">{{time_list[n]}}</li>
     		  </ul>
-                <button class="launch-button" style="height:5px; width:auto; padding-top: 0px; margin-top: 0px;"><a href="/events/{{id_list[n]}}" style="color:white;font-size:15px;">View in Search</a></button>
-    	
+
+                {% if current_user.is_authenticated %}
+                    <button class="launch-button" style="height:5px; width:auto; padding-top: 0px; margin-top: 0px;"><a href="/events/{{id_list[n]}}" style="color:white;font-size:15px;">View in Search</a></button>
+    	        {% endif %}
     	   </figcaption>
   
         </li>
