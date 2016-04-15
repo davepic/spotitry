@@ -497,7 +497,7 @@ def login():
 		return render_template('login.html', form=form)
 
 
-@app.route("/logout")
+@app.route("/logout" , methods=['GET', 'POST'])
 def logout():
 
 	if current_user.is_authenticated:
@@ -505,7 +505,10 @@ def logout():
 			data.delete()
 
 	logout_user()
-	return render_template('hello.html', logged_out=True)
+
+	form= UserForm(request.form)
+
+	return redirect('/login')
 
 
 

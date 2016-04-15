@@ -3,11 +3,7 @@
 
 
 {% block body %}
-{% if logged_out %}
-    <h1 style="padding-bottom:0px; color: red;">You have successfully logged out</h1>
-    <a href="/login"><button class="launch-button">Login</button></a>
 
-{% else %}
 
 {% if current_user.is_authenticated %}
 	
@@ -69,7 +65,6 @@
   </nav>
 </div>
 
-{% endif %}
 {% endblock %}	
 
 
