@@ -500,11 +500,12 @@ def login():
 @app.route("/logout")
 def logout():
 
-	for data in SearchData.objects(poster=current_user.Email):
-		data.delete()
+	if current_user.is_authenticated:
+		for data in SearchData.objects(poster=current_user.Email):
+			data.delete()
 
 	logout_user()
-	return render_template('logout.html')
+	return render_template('hello.html', logged_out=True)
 
 
 

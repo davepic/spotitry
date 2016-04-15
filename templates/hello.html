@@ -3,6 +3,11 @@
 
 
 {% block body %}
+{% if logged_out %}
+    <h1 style="padding-bottom:0px; color: red;">You have successfully logged out</h1>
+    <a href="/login"><button class="launch-button">Login</button></a>
+
+{% else %}
 
 {% if current_user.is_authenticated %}
 	
@@ -17,6 +22,8 @@
 	<a href="/register"><button class="launch-button">Register</button></a>
 
 {% endif %}
+
+
 
 <div class="orbit" role="region" aria-label="Favorite Space Pictures" data-orbit style=" padding-top: 25px; display:block; margin: 0 auto;">
   <ul class="orbit-container" style="width:600px; height:600px; display: block; margin: 0 auto; border-style: solid; border-width: 5px; border-color: #00688B"> 
@@ -62,6 +69,7 @@
   </nav>
 </div>
 
+{% endif %}
 {% endblock %}	
 
 
