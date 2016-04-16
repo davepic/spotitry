@@ -154,6 +154,12 @@
 	{% else %}
 		<option value="365">One Year</option>
 	{% endif %}
+
+	{% if num_days=="" %}
+		<option value="" selected>All Time</option>
+	{% else %}
+		<option value="">All Time</option>
+	{% endif %}
 	
 
 </select>

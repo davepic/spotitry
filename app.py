@@ -203,12 +203,18 @@ def search():
 			month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 			start_date = datetime.today().strftime('%Y-%m-%d')
 			date_1 = datetime.strptime(start_date, "%Y-%m-%d")
-			end_date = date_1 + (timedelta(days=int(request.form["num_days"])))
-			date_1 = date_1.strftime('%Y-%m-%d')
-			end_date = end_date.strftime('%Y-%m-%d')
 
-			url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["state_search"] + "&taxonomies.name=" + request.form["category_search"]+ "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-		
+			if request.form["num_days"] != "":
+				end_date = date_1 + (timedelta(days=int(request.form["num_days"])))
+				date_1 = date_1.strftime('%Y-%m-%d')
+				end_date = end_date.strftime('%Y-%m-%d')
+
+				url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["state_search"] + "&taxonomies.name=" + request.form["category_search"]+ "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+			
+			else:
+
+				url ="https://api.seatgeek.com/2/events?venue.state=" + request.form["state_search"] + "&taxonomies.name=" + request.form["category_search"]+ "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+
 			try:
 				page = int(request.args.get('page', 1))
 			except ValueError:
@@ -282,14 +288,15 @@ def search():
 			month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 			start_date = datetime.today().strftime('%Y-%m-%d')
 			date_1 = datetime.strptime(start_date, "%Y-%m-%d")
-			end_date = date_1 + (timedelta(days=int(SearchData.objects.first().num_days)))
-			date_1 = date_1.strftime('%Y-%m-%d')
-			end_date = end_date.strftime('%Y-%m-%d')
 
-			url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + SearchData.objects.first().state + "&taxonomies.name=" + SearchData.objects.first().category+ "&sort=" + SearchData.objects.first().sort_by+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-        
+			if SearchData.objects.first().num_days != "":
+				end_date = date_1 + (timedelta(days=int(SearchData.objects.first().num_days)))
+				date_1 = date_1.strftime('%Y-%m-%d')
+				end_date = end_date.strftime('%Y-%m-%d')
+				url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + SearchData.objects.first().state + "&taxonomies.name=" + SearchData.objects.first().category+ "&sort=" + SearchData.objects.first().sort_by+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+			else:
+				url= "https://api.seatgeek.com/2/events?datetime_utc.gte=" + "&venue.state=" + SearchData.objects.first().state + "&taxonomies.name=" + SearchData.objects.first().category + "&sort=" + SearchData.objects.first().sort_by + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
 			response_dict = requests.get(url).json()
-
 			try:
 				page = int(request.args.get('page', 1))
 			except ValueError:
