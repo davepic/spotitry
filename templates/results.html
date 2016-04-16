@@ -28,7 +28,9 @@
 	
 
 
-<select name="category_search" style="width:12%; margin:0 auto; margin-bottom:10px;" required>
+<select name="category_search" style="width:8%; margin:0 auto; margin-bottom:10px;" required>
+
+	<option value="">Category</option>
 	
 	{% if category=="concert" %}
 	
@@ -127,7 +129,7 @@
 
 <!--<input name="num_days" type="number" min="1" max="20" step="1" value={{num_days}} style="width:auto; margin:0 auto; margin-bottom:10px;display:inline;"></input> !-->
 
-<select name="num_days" style="width:10%; margin:0 auto; margin-bottom:10px;display:inline;" required>	
+<select name="num_days" style="width:9%; margin:0 auto; margin-bottom:10px;display:inline;" required>	
 
 	<option value="" selected>Date Range</option>
 
@@ -166,6 +168,8 @@
 
 <select name="sort_by" style="width:12%; margin:0 auto; margin-bottom:10px;" required>
 	
+	<option value = "">Sort By</option>
+
 	{% if sort=="datetime_local.asc" %}
 		<option value="datetime_local.asc" selected>Date Ascending</option>
 
@@ -201,11 +205,37 @@
 		<option value="score.asc">Least Popular</option>
 
 	{% endif %}
-
-
-	
 	
 </select>	
+
+<select name="per_page" style="width:8%; margin:0 auto; margin-bottom:10px;">
+
+	<option value = "">Per Page</option>	
+	{% if per_page == "10" %}
+		<option value="10" selected>10</option>
+	{% else %}
+		<option value="10">10</option>
+	{% endif %}
+
+	{% if per_page == "25" %}
+		<option value="25" selected>25</option>
+	{% else %}
+		<option value="25">25</option>
+	{% endif %}
+
+	{% if per_page == "50" %}
+		<option value="50" selected>50</option>
+	{% else %}
+		<option value="50">50</option>
+	{% endif %}
+
+	{% if per_page == "100" %}
+		<option value="100" selected>100</option>
+	{% else %}
+		<option value="100">100</option>
+	{% endif %}
+
+</select>
 
 
 

@@ -98,6 +98,7 @@ class SearchData(db.Document):
 	sort_by = db.StringField(required=True)
 	total = db.IntField(required=True)
 	poster = db.StringField(required=True)
+	per_page = db.StringField(required=True)
 
 @app.route("/")
 def hello():
@@ -215,6 +216,9 @@ def search():
 
 				url ="https://api.seatgeek.com/2/events?venue.state=" + request.form["state_search"] + "&taxonomies.name=" + request.form["category_search"]+ "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
 
+			if request.form["per_page"] != "":
+				url = url + "&per_page=" + request.form["per_page"]
+
 			try:
 				page = int(request.args.get('page', 1))
 			except ValueError:
@@ -231,20 +235,24 @@ def search():
 
 			if request.form["user_search"]:
 
-				new_search = SearchData(poster= current_user.Email, total = total, num_days= (request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+				new_search = SearchData(per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 		
 			else:
 			
-				new_search = SearchData(poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+				new_search = SearchData(per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 
 			new_search.save()
 
 			if total>0:
 
 				response_dict = requests.get(url).json()
+
+				if request.form["per_page"] == "":
    
-				pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
-			
+					pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
+				else:
+					pagination = Pagination(page=page, total = total, search=search, per_page=int(request.form["per_page"]), show_single_page=True, record_name="events", css_framework='foundation', found=total)
+
 				for event in response_dict["events"]:
 					date_str = ""
 					time_str = ""
@@ -273,7 +281,7 @@ def search():
 				num_events= len(date_list)
 		
 			
-				return render_template("results.html", events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 			else:
 				return render_template("search.html", failed=True)
 
@@ -309,12 +317,22 @@ def search():
 
 			url = url + "&page="+str(page)
 
+			if SearchData.objects.first().per_page != "":
+
+				url = url + "&per_page=" + SearchData.objects.first().per_page
+
 			if total>0:
 
 				response_dict = requests.get(url).json()
 
-				pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
-			
+				if SearchData.objects.first().per_page == "":
+
+					pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
+				
+				else:
+
+					pagination = Pagination(page=page, total = total, search=search, per_page=int(SearchData.objects.first().per_page), show_single_page=True, record_name="events", css_framework='foundation', found =total)
+
 				for event in response_dict["events"]:
 					date_str = ""
 					time_str = ""
@@ -343,7 +361,7 @@ def search():
 				num_events= len(date_list)
 		
 			
-				return render_template("results.html", events=response_dict["events"], user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", events=response_dict["events"], user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, per_page = SearchData.objects.first().per_page, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 			else:
 
 				return render_template("search.html", failed=True)
