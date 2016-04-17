@@ -28,7 +28,7 @@
 	
 
 
-<select name="category_search" style="width:8%; margin:0 auto; margin-bottom:10px;" required>
+<select name="category_search" style="width:8%; margin:0 auto; margin-bottom:10px;">
 
 	<option value="">Category</option>
 
@@ -136,7 +136,7 @@
 
 <!--<input name="num_days" type="number" min="1" max="20" step="1" value={{num_days}} style="width:auto; margin:0 auto; margin-bottom:10px;display:inline;"></input> !-->
 
-<select name="num_days" style="width:9%; margin:0 auto; margin-bottom:10px;display:inline;" required>	
+<select name="num_days" style="width:9%; margin:0 auto; margin-bottom:10px;display:inline;">	
 
 	<option value="" selected>Date Range</option>
 
@@ -173,11 +173,11 @@
 
 </select>
 
-<select name="sort_by" style="width:12%; margin:0 auto; margin-bottom:10px;" required>
+<select name="sort_by" style="width:12%; margin:0 auto; margin-bottom:10px;">
 	
 	<option value = "">Sort By</option>
 
-	{% if sort=="datetime_local.asc" %}
+	{% if sort=="datetime_local.asc" or sort=="" %}
 		<option value="datetime_local.asc" selected>Date Ascending</option>
 
 	{% else %}
@@ -218,7 +218,7 @@
 <select name="per_page" style="width:8%; margin:0 auto; margin-bottom:10px;">
 
 	<option value = "">Per Page</option>	
-	{% if per_page == "10" %}
+	{% if (per_page == "10") or (per_page=="") %}
 		<option value="10" selected>10</option>
 	{% else %}
 		<option value="10">10</option>

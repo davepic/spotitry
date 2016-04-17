@@ -205,22 +205,23 @@ def search():
 			start_date = datetime.today().strftime('%Y-%m-%d')
 			date_1 = datetime.strptime(start_date, "%Y-%m-%d")
 
+			url = "https://api.seatgeek.com/2/events?venue.state=" + request.form["state_search"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+
 			if request.form["num_days"] != "":
 				end_date = date_1 + (timedelta(days=int(request.form["num_days"])))
 				date_1 = date_1.strftime('%Y-%m-%d')
 				end_date = end_date.strftime('%Y-%m-%d')
+				url = url + "&datetime_utc.gte=" + date_1 +"&datetime_utc.lte=" + end_date
 
-				url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + request.form["state_search"] + "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-			
-			else:
-
-				url ="https://api.seatgeek.com/2/events?venue.state=" + request.form["state_search"] + "&sort=" + request.form["sort_by"]+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+			if request.form["sort_by"] != "":
+				url = url + "&sort=" + request.form["sort_by"]
 
 			if request.form["category_search"] != "":
 				url = url + "&taxonomies.name=" + request.form["category_search"]
 
 			if request.form["per_page"] != "":
 				url = url + "&per_page=" + request.form["per_page"]
+
 
 			try:
 				page = int(request.args.get('page', 1))
@@ -255,10 +256,6 @@ def search():
 					pagination = Pagination(page=page, total = total, search=search, per_page=10, show_single_page=True, record_name="events", css_framework='foundation', found =total)
 				else:
 					pagination = Pagination(page=page, total = total, search=search, per_page=int(request.form["per_page"]), show_single_page=True, record_name="events", css_framework='foundation', found=total)
-
-
-
-
 
 
 				for event in response_dict["events"]:
@@ -305,23 +302,25 @@ def search():
 			start_date = datetime.today().strftime('%Y-%m-%d')
 			date_1 = datetime.strptime(start_date, "%Y-%m-%d")
 
+			url = "https://api.seatgeek.com/2/events?" + "venue.state=" + SearchData.objects.first().state +  "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+
 			if SearchData.objects.first().num_days != "":
 				end_date = date_1 + (timedelta(days=int(SearchData.objects.first().num_days)))
 				date_1 = date_1.strftime('%Y-%m-%d')
 				end_date = end_date.strftime('%Y-%m-%d')
-				url ="https://api.seatgeek.com/2/events?datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date + "&venue.state=" + SearchData.objects.first().state + "&sort=" + SearchData.objects.first().sort_by+ "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
-			else:
-				url= "https://api.seatgeek.com/2/events?datetime_utc.gte=" + "&venue.state=" + SearchData.objects.first().state + "&sort=" + SearchData.objects.first().sort_by + "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+				url = url + "&datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date
 			
 
-
-			response_dict = requests.get(url).json()
+			#response_dict = requests.get(url).json()
 			try:
 				page = int(request.args.get('page', 1))
 			except ValueError:
 				page = 1
 
 			total = SearchData.objects.first().total
+
+			if SearchData.objects.first().sort_by != "":
+				url = url + "&sort=" + SearchData.objects.first().sort_by
 
 			if SearchData.objects.first().category != "":
 				url = url + "&taxonomies.name=" + SearchData.objects.first().category_search
