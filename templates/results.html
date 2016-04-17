@@ -173,6 +173,12 @@
 
 </select>
 
+{% if max_price %}
+	<input type="text" placeholder="{{max_price}}" name=max_price style="width:9%; margin:0 auto; margin-bottom:10px;display:inline;"/>
+{% else %}
+	<input type="text" placeholder="Max Price" name=max_price style="width:9%; margin:0 auto; margin-bottom:10px;display:inline;"/>
+{% endif %}
+
 <select name="sort_by" style="width:12%; margin:0 auto; margin-bottom:10px;">
 	
 	<option value = "">Sort By</option>
@@ -248,7 +254,7 @@
 
 
 
-<div style="display:inline;">
+<div>
 	<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Submit</button>
 </div>
 

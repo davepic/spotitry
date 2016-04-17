@@ -99,6 +99,7 @@ class SearchData(db.Document):
 	total = db.IntField(required=True)
 	poster = db.StringField(required=True)
 	per_page = db.StringField(required=True)
+	max_price = db.StringField(required=False)
 
 @app.route("/")
 def hello():
@@ -222,6 +223,9 @@ def search():
 			if request.form["per_page"] != "":
 				url = url + "&per_page=" + request.form["per_page"]
 
+			if request.form["max_price"] != "":
+				url = url + "&lowest_price.lte=" + request.form["max_price"]
+
 
 			try:
 				page = int(request.args.get('page', 1))
@@ -230,21 +234,27 @@ def search():
 
 			if request.form["user_search"]:
 				url = url + "&q=" + request.form["user_search"]
+			else:
+				url = url + "&listing_count.gt=0"
 
 			url = url + "&page="+str(page)
 
+			
 			response_dict = requests.get(url).json()
 
 			total = response_dict["meta"]["total"]
 
 			if request.form["user_search"]:
-
-				new_search = SearchData(per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
-		
+				if request.form["max_price"]:
+					new_search = SearchData(max_price= request.form["max_price"], per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+				else:
+					new_search = SearchData(per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), user_search=request.form["user_search"], category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 			else:
-			
-				new_search = SearchData(per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
-
+				
+				if request.form["max_price"]:
+					new_search = SearchData(max_price= request.form["max_price"], per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
+				else:
+					new_search = SearchData(per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 			new_search.save()
 
 			if total>0:
@@ -286,7 +296,7 @@ def search():
 				num_events= len(date_list)
 		
 			
-				return render_template("results.html", events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 			else:
 				return render_template("search.html", failed=True)
 
@@ -302,7 +312,12 @@ def search():
 			start_date = datetime.today().strftime('%Y-%m-%d')
 			date_1 = datetime.strptime(start_date, "%Y-%m-%d")
 
-			url = "https://api.seatgeek.com/2/events?" + "venue.state=" + SearchData.objects.first().state +  "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+			url = "https://api.seatgeek.com/2/events?" + "venue.state=" + SearchData.objects.first().state
+
+			if SearchData.objects.first().user_search:
+				url = url + "&q=" + SearchData.objects.first().user_search
+			else:
+				url = url + "&listing_count.gt=0"
 
 			if SearchData.objects.first().num_days != "":
 				end_date = date_1 + (timedelta(days=int(SearchData.objects.first().num_days)))
@@ -323,20 +338,29 @@ def search():
 				url = url + "&sort=" + SearchData.objects.first().sort_by
 
 			if SearchData.objects.first().category != "":
-				url = url + "&taxonomies.name=" + SearchData.objects.first().category_search
+				url = url + "&taxonomies.name=" + SearchData.objects.first().category
 
-			if SearchData.objects.first().user_search:
-				url = url + "&q=" + SearchData.objects.first().user_search
+			
+
+			if SearchData.objects.first().max_price:
+				url = url + "&lowest_price.lte=" + SearchData.objects.first().max_price
 
 			url = url + "&page="+str(page)
+
+
 
 			if SearchData.objects.first().per_page != "":
 
 				url = url + "&per_page=" + SearchData.objects.first().per_page
 
+			url = url +  "&client_id=NDM5NTU0NHwxNDU4NzUzODgz"
+
 			if total>0:
 
+				
+
 				response_dict = requests.get(url).json()
+
 
 				if SearchData.objects.first().per_page == "":
 
@@ -371,10 +395,11 @@ def search():
 					price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
 
         	
-				num_events= len(date_list)
+				num_events= len(date_list) 
+				
 		
 			
-				return render_template("results.html", events=response_dict["events"], user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, per_page = SearchData.objects.first().per_page, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", events=response_dict["events"], max_price = SearchData.objects.first().max_price, user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, per_page = SearchData.objects.first().per_page, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 			else:
 
 				return render_template("search.html", failed=True)
