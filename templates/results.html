@@ -31,7 +31,7 @@
 <select name="category_search" style="width:8%; margin:0 auto; margin-bottom:10px;" required>
 
 	<option value="">Category</option>
-	
+
 	{% if category=="concert" %}
 	
 		<option value="concert" selected>Concerts</option>
@@ -66,6 +66,13 @@
 
 		<option value="theater">Theater</option>
 
+	{% endif %}
+
+	{% if category==""%}
+
+		<option value="" selected>All</option>
+	{% else %}
+		<option value="">All</option>
 	{% endif %}
 	
 </select>	
