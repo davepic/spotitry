@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block title %} Search {% endblock %}
 
-
-
 {% block body %}
 
 	<h1>Search</h1>
@@ -37,8 +35,6 @@
 	<option value="">All</option>x	
 	
 </select>	
-
-
 
 <select name="state_search" style="width:10%; margin:0 auto; margin-bottom:10px;" required>
 
@@ -97,8 +93,6 @@
 
 </select>		
 
-<!--<input name="num_days" type="number" min="1" max="20" step="1" value="1" style="width:auto; margin:0 auto; margin-bottom:10px;display:inline;"></input> !-->
-
 <select name="num_days" style="width:9%; margin:0 auto; margin-bottom:10px;display:inline;">	
 
 	<option value = "">Date Range</option>
@@ -134,17 +128,9 @@
 	
 </select>		
 
-
-
-
-
 <div>
 	<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Search</button>
 </div>
-
-	
-
-
 
 {% block results %}{% endblock %}
 

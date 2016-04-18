@@ -24,10 +24,6 @@
 
 	{%	endif %}
 	
-
-	
-
-
 <select name="category_search" style="width:8%; margin:0 auto; margin-bottom:10px;">
 
 	<option value="">Category</option>
@@ -134,8 +130,6 @@
 
 </select>		
 
-<!--<input name="num_days" type="number" min="1" max="20" step="1" value={{num_days}} style="width:auto; margin:0 auto; margin-bottom:10px;display:inline;"></input> !-->
-
 <select name="num_days" style="width:9%; margin:0 auto; margin-bottom:10px;display:inline;">	
 
 	<option value="" selected>Date Range</option>
@@ -168,8 +162,7 @@
 		<option value="" selected>All Time</option>
 	{% else %}
 		<option value="">All Time</option>
-	{% endif %}
-	
+	{% endif %}	
 
 </select>
 
@@ -250,22 +243,14 @@
 
 </select>
 
-
-
-
-
 <div>
 	<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Submit</button>
 </div>
 
-
 {% block results %}
-
-		
+	
 		{% if num_events > 0 %}
 	
-		
-		
 		{% for n in range(num_events)%}
 		
 
@@ -351,9 +336,6 @@
 
 							{% endif %}
 
-
-
-
 						</ul>
 
 
@@ -373,22 +355,12 @@
 		</div>
 		
 		
-
-
-		
 		{% endfor %}
 		
-	
-	
-
 
 	{% else %}
 		<h1 class="blue">There were no events found.</h1>
 	{% endif %}
-	
-
-
-	
 
 	{% endblock %}
 
