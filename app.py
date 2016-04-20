@@ -324,6 +324,7 @@ def search():
 			date_list= []
 			time_list = []
 			price_list = []
+			link_list = []
 
 
 			month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
@@ -344,7 +345,6 @@ def search():
 				url = url + "&datetime_utc.gte=" + date_1 +"&datetime_utc.lte="+ end_date
 			
 
-			#response_dict = requests.get(url).json()
 			try:
 				page = int(request.args.get('page', 1))
 			except ValueError:
@@ -389,6 +389,16 @@ def search():
 					pagination = Pagination(page=page, total = total, search=search, per_page=int(SearchData.objects.first().per_page), show_single_page=True, record_name="events", css_framework='foundation', found =total)
 
 				for event in response_dict["events"]:
+
+					artist_url = "https://api.seatgeek.com/2/performers/" + str(event["performers"][0]["id"])
+
+					artist_dict = requests.get(artist_url).json()
+
+					if artist_dict.get("links"):
+						link_list.append(artist_dict["links"][0]["url"])
+					else:
+						link_list.append("nothing")
+
 					date_str = ""
 					time_str = ""
 					mystr = ""
@@ -414,10 +424,8 @@ def search():
 
         	
 				num_events= len(date_list) 
-				
-		
 			
-				return render_template("results.html", events=response_dict["events"], max_price = SearchData.objects.first().max_price, user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, per_page = SearchData.objects.first().per_page, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", link_list=link_list, events=response_dict["events"], max_price = SearchData.objects.first().max_price, user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, per_page = SearchData.objects.first().per_page, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 			else:
 
 				return render_template("search.html", failed=True)
