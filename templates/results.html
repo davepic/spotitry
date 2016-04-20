@@ -347,6 +347,10 @@
 
 				<li><a href="{{api_data["events"][n]["url"]}}" class="button" style="background-color: #00688B; color:white;">View Tickets on SeatGeek</a></li>
 
+				{% if link_list[n] != "nothing" %}
+				<li><a href="{{link_list[n]}}" class="button" style="background-color: #00688B; color:white;">View Artist on Spotify</a></li>
+				{% endif %}
+
 				</ul>
 			</ul>
 		</ul>

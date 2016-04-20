@@ -201,6 +201,7 @@ def search():
 			date_list= []
 			time_list = []
 			price_list = []
+			link_list = []
 
 			month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 			start_date = datetime.today().strftime('%Y-%m-%d')
@@ -239,6 +240,8 @@ def search():
 
 			url = url + "&page="+str(page)
 
+
+
 			
 			response_dict = requests.get(url).json()
 
@@ -257,9 +260,12 @@ def search():
 					new_search = SearchData(per_page= request.form["per_page"], poster= current_user.Email, total = total, num_days= (request.form["num_days"]), category=request.form["category_search"], state= request.form["state_search"], sort_by=request.form["sort_by"])
 			new_search.save()
 
+			
+
 			if total>0:
 
 				response_dict = requests.get(url).json()
+				 
 
 				if request.form["per_page"] == "":
    
@@ -269,6 +275,17 @@ def search():
 
 
 				for event in response_dict["events"]:
+
+					artist_url = "https://api.seatgeek.com/2/performers/" + str(event["performers"][0]["id"])
+
+					artist_dict = requests.get(artist_url).json()
+
+					if artist_dict.get("links"):
+						link_list.append(artist_dict["links"][0]["url"])
+					else:
+						link_list.append("nothing")
+						
+
 					date_str = ""
 					time_str = ""
 					mystr = ""
@@ -295,8 +312,9 @@ def search():
         	
 				num_events= len(date_list)
 		
-			
-				return render_template("results.html", max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				
+				return render_template("results.html", link_list = link_list, max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				
 			else:
 				return render_template("search.html", failed=True)
 
