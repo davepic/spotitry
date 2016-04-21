@@ -12,6 +12,7 @@ from flask.ext.paginate import Pagination
 
 
 
+
 app = Flask(__name__)
 app.config.update(dict(
 
@@ -202,6 +203,7 @@ def search():
 			time_list = []
 			price_list = []
 			link_list = []
+			song_list = []
 
 			month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 			start_date = datetime.today().strftime('%Y-%m-%d')
@@ -276,10 +278,23 @@ def search():
 
 				for event in response_dict["events"]:
 
+					i = 0
+
+					temp_song_list = []
+
 					artist_url = "https://api.seatgeek.com/2/performers/" + str(event["performers"][0]["id"])
 
+					song_url = "http://developer.echonest.com/api/v4/song/search?api_key=WAIWXTP9XKUFFH8GO&format=json&artist_id=seatgeek:artist:" + str(event["performers"][0]["id"])+ "&sort=song_hotttnesss-desc&results=100"
+					
 					artist_dict = requests.get(artist_url).json()
+					song_dict = requests.get(song_url).json()
 
+					if song_dict["response"]["status"]["message"] == "Success":
+						for j in range(len(song_dict["response"]["songs"])-1):
+							if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
+								temp_song_list.append(song_dict["response"]["songs"][j]["title"])
+								
+								
 					if artist_dict.get("links"):
 						link_list.append(artist_dict["links"][0]["url"])
 					else:
@@ -308,12 +323,11 @@ def search():
 					time_list.append(time_str)
 
 					price_list.append((str(event["stats"]["average_price"])+'0', str(event["stats"]["lowest_price"])+'0', str(event["stats"]["highest_price"])+'0'))
-
+					song_list.append(temp_song_list)
         	
 				num_events= len(date_list)
-		
 				
-				return render_template("results.html", link_list = link_list, max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", song_list = song_list, link_list = link_list, max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 				
 			else:
 				return render_template("search.html", failed=True)

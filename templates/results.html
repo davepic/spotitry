@@ -352,6 +352,19 @@
 				{% endif %}
 
 				</ul>
+
+				<ul class="results">
+					{% if song_list %}
+						{% for m in range(3)%}
+							<li>{{song_list[n][m]}}</li>
+						{% endfor %}
+					{% endif %}
+
+				</ul>
+
+
+
+
 			</ul>
 		</ul>
 		
