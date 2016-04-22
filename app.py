@@ -305,6 +305,13 @@ def search():
 					try:
 						if setlist_dict["setlists"]["setlist"][0]["sets"] != "":
 							temp_setlist.append(setlist_dict["setlists"]["setlist"][0]["sets"]["set"]["song"][0]["@name"])
+						elif setlist_dict["setlists"]["setlist"][1]["sets"] != "":
+							print setlist_url
+							try:
+								temp_setlist.append(setlist_dict["setlists"]["setlist"][1]["sets"]["set"][0]["song"][0]["@name"])
+							except KeyError:
+								temp_setlist.append(setlist_dict["setlists"]["setlist"][1]["sets"]["set"]["song"][0]["@name"])
+
 					except IndexError:
 						pass
 
