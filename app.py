@@ -311,8 +311,15 @@ def search():
 						print setlist_url
 
 						if type(setlist_dict["setlists"]["setlist"][0]["sets"]["set"]) is list:
-							for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"][0]["song"]:
-								print song["@name"]
+							for show_setlist in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]:
+								for song in show_setlist["song"]:
+									print song["@name"]
+								#if type(show_setlist) is dict:
+								#	print "yes"
+								#	for song in show_setlist:
+								#		print song["@name"]
+							#for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"][0]["song"]:
+							#print song["@name"]
 
 						else:
 							for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]["song"]:
