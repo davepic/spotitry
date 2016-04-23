@@ -9,7 +9,7 @@ from flask_mail import Mail, Message
 import requests.packages.urllib3
 from flask.ext.paginate import Pagination
 
-
+requests.packages.urllib3.disable_warnings()
 
 
 
@@ -302,18 +302,21 @@ def search():
 					except ValueError:
 						pass
 
-					try:
-						if setlist_dict["setlists"]["setlist"][0]["sets"] != "":
-							temp_setlist.append(setlist_dict["setlists"]["setlist"][0]["sets"]["set"]["song"][0]["@name"])
-						elif setlist_dict["setlists"]["setlist"][1]["sets"] != "":
-							print setlist_url
-							try:
-								temp_setlist.append(setlist_dict["setlists"]["setlist"][1]["sets"]["set"][0]["song"][0]["@name"])
-							except KeyError:
-								temp_setlist.append(setlist_dict["setlists"]["setlist"][1]["sets"]["set"]["song"][0]["@name"])
+					
+					if setlist_dict["setlists"]["setlist"][0]["sets"] != "":
 
-					except IndexError:
-						pass
+						num_sets = len(setlist_dict["setlists"]["setlist"][0]["sets"])
+						
+						print num_sets
+						print setlist_url
+
+						for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]["song"]:
+							print song["@name"]
+						
+						#for song_set in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]:
+						#	for song in song_set[0]["song"]:
+						#		temp_setlist.append(song["@name"])
+						
 
 					if song_dict["response"]["status"]["message"] == "Success":
 						for j in range(len(song_dict["response"]["songs"])-1):
