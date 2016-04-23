@@ -305,13 +305,18 @@ def search():
 					
 					if setlist_dict["setlists"]["setlist"][0]["sets"] != "":
 
-						num_sets = len(setlist_dict["setlists"]["setlist"][0]["sets"])
+						num_sets = len(setlist_dict["setlists"]["setlist"][0]["sets"]["set"])
 						
 						print num_sets
 						print setlist_url
 
-						for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]["song"]:
-							print song["@name"]
+						if type(setlist_dict["setlists"]["setlist"][0]["sets"]["set"]) is list:
+							for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"][0]["song"]:
+								print song["@name"]
+
+						else:
+							for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]["song"]:
+								print song["@name"]
 						
 						#for song_set in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]:
 						#	for song in song_set[0]["song"]:
