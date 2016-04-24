@@ -325,8 +325,12 @@ def search():
 
 					if song_dict["response"]["status"]["message"] == "Success":
 						for j in range(len(song_dict["response"]["songs"])-1):
-							if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
-								temp_song_list.append(song_dict["response"]["songs"][j]["title"])
+							if min(len(song_dict["response"]["songs"][j]["title"]), len(song_dict["response"]["songs"][j+1]["title"])) > 3:
+								if song_dict["response"]["songs"][j]["title"][:4] != song_dict["response"]["songs"][j+1]["title"][:4]:
+									temp_song_list.append(song_dict["response"]["songs"][j]["title"])
+							else:
+								if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
+									temp_song_list.append(song_dict["response"]["songs"][j]["title"]) 
 						
 
 					if artist_dict.get("links"):
@@ -461,9 +465,13 @@ def search():
 
 					if song_dict["response"]["status"]["message"] == "Success":
 						for j in range(len(song_dict["response"]["songs"])-1):
-							if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
-								temp_song_list.append(song_dict["response"]["songs"][j]["title"])
-					
+							if min(len(song_dict["response"]["songs"][j]["title"]), len(song_dict["response"]["songs"][j+1]["title"])) > 3:
+								if song_dict["response"]["songs"][j]["title"][:4] != song_dict["response"]["songs"][j+1]["title"][:4]:
+									temp_song_list.append(song_dict["response"]["songs"][j]["title"])
+							else:
+								if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
+									temp_song_list.append(song_dict["response"]["songs"][j]["title"]) 
+						
 
 					date_str = ""
 					time_str = ""
