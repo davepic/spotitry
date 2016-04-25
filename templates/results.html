@@ -256,17 +256,17 @@
 
 		<div class="row" style="width:99.5%;">
 		<div class="small-12 columns" >
-		<ul class="results" style="border-style: solid; border-color: #00688B; border-width:2px; margin-top:20px; margin-bottom: 20px; padding-top: 10px;height: 280px; background-color: rgba(188,210,238, .9);">
+		<ul class="results" style="border-style: solid; border-color: #00688B; border-width:2px; margin-top:20px; margin-bottom: 20px; padding-top: 10px;height: 410px; background-color: rgba(188,210,238, .9);">
 
 				{% if api_data["events"][n]["performers"][0]["image"] %}
-				<li style="padding-top: 15px;">
+				<li style="padding-top: 70px;">
 			
 					<img src={{api_data["events"][n]["performers"][0]["image"]}} height=300 width=300>
 				</li>
 
 				{% else %}
 
-				<li style="margin-right:50px;">
+				<li style="padding-top:70px; margin-right:50px;">
 					<img src="http://www.coloradowindensemble.org/wp-content/uploads/2013/06/ticket-graphic-ticket4.png" height=300 width=250>
 
 				</li>
@@ -357,14 +357,14 @@
 
 
 				{% if song_list[n] %}
-				<div style= "margin-top: 0px; background-color: rgba(255, 255, 255, 0.9); height: 30px; width: 650px; border-style: solid; border-color: #00688B; border-width:2px;">
-				<ul style = "list-style-type: none; float: left; color:#00688B; font-size:small;" >
+				<div style= "margin-top: 0px; background-color: rgba(255, 255, 255, 0.9); height: 160px; width: 650px; border-style: solid; border-color: #00688B; border-width:2px;">
+				<ul style = "list-style-type: none; float: left; color:#00688B;" >
 					
 						
-						<li style = "display:inline; padding-left:0px;"><strong>Top Songs: </strong></li>
-						{% for m in range(3)%}
+						<li style = "padding-left:0px;"><strong>Top Songs: </strong></li>
+						{% for m in range(5)%}
 							{% if song_list[n][m]%}
-								<li style= "display:inline;">{{m+1}}: {{song_list[n][m]}}</li>
+								<li>{{m+1}}: {{song_list[n][m]}}</li>
 							{% endif %}
 							
 							
