@@ -205,6 +205,7 @@ def search():
 			link_list = []
 			song_list = []
 			setlist = []
+			name_list = []
 
 			month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
 			start_date = datetime.today().strftime('%Y-%m-%d')
@@ -280,6 +281,7 @@ def search():
 				for event in response_dict["events"]:
 
 					i = 0
+					index = 0
 
 					temp_song_list = []
 					temp_setlist = []
@@ -298,45 +300,55 @@ def search():
 
 
 
-					try:
-						setlist_dict = requests.get(setlist_url).json()
-					
-						if setlist_dict["setlists"]["setlist"][0]["sets"] != "":
+					if request.form["category_search"] == "concert":
 
-							num_sets = len(setlist_dict["setlists"]["setlist"][0]["sets"]["set"])
+						try:
+							setlist_dict = requests.get(setlist_url).json()
+
+							while setlist_dict["setlists"]["setlist"][index]["sets"] == "" and index<int(setlist_dict["setlists"]["@total"]):
+								index=index+1
+
+							print index
+							if setlist_dict["setlists"]["setlist"][index]["sets"] != "":
+
+								name_list.append(event["performers"][0]["name"])
+
+								num_sets = len(setlist_dict["setlists"]["setlist"][index]["sets"]["set"])
 						
-							print num_sets
-							print setlist_url
+								print num_sets
+								print setlist_url
 
-							if type(setlist_dict["setlists"]["setlist"][0]["sets"]["set"]) is list:
-								for show_setlist in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]:
-									if "@encore" in show_setlist.keys():
-										print "Encore " + show_setlist["@encore"]
-									for song in show_setlist["song"]:
+								if type(setlist_dict["setlists"]["setlist"][index]["sets"]["set"]) is list:
+									for show_setlist in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]:
+										if "@encore" in show_setlist.keys():
+											print "Encore " + show_setlist["@encore"]
+										for song in show_setlist["song"]:
+											print song["@name"]
+
+								else:
+									for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
 										print song["@name"]
-
 							else:
-								for song in setlist_dict["setlists"]["setlist"][0]["sets"]["set"]["song"]:
-									print song["@name"]
+								name_list.append("")
 						
-					except ValueError:
-						pass
-						
-
-					if song_dict["response"]["status"]["message"] == "Success":
-						for j in range(len(song_dict["response"]["songs"])-1):
-							if min(len(song_dict["response"]["songs"][j]["title"]), len(song_dict["response"]["songs"][j+1]["title"])) > 3:
-								if song_dict["response"]["songs"][j]["title"][:4] != song_dict["response"]["songs"][j+1]["title"][:4]:
-									temp_song_list.append(song_dict["response"]["songs"][j]["title"])
-							else:
-								if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
-									temp_song_list.append(song_dict["response"]["songs"][j]["title"]) 
+						except ValueError:
+							name_list.append("")
 						
 
-					if artist_dict.get("links"):
-						link_list.append(artist_dict["links"][0]["url"])
-					else:
-						link_list.append("nothing")
+						if song_dict["response"]["status"]["message"] == "Success":
+							for j in range(len(song_dict["response"]["songs"])-1):
+								if min(len(song_dict["response"]["songs"][j]["title"]), len(song_dict["response"]["songs"][j+1]["title"])) > 3:
+									if song_dict["response"]["songs"][j]["title"][:4] != song_dict["response"]["songs"][j+1]["title"][:4]:
+										temp_song_list.append(song_dict["response"]["songs"][j]["title"])
+								else:
+									if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
+										temp_song_list.append(song_dict["response"]["songs"][j]["title"]) 
+						
+
+						if artist_dict.get("links"):
+							link_list.append(artist_dict["links"][0]["url"])
+						else:
+							link_list.append("nothing")
 						
 
 					date_str = ""
@@ -368,7 +380,7 @@ def search():
 
 				print setlist
 				
-				return render_template("results.html", song_list = song_list, link_list = link_list, max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", name_list = name_list, song_list = song_list, link_list = link_list, max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 				
 			else:
 				return render_template("search.html", failed=True)
@@ -381,6 +393,7 @@ def search():
 			price_list = []
 			link_list = []
 			song_list = []
+			name_list = []
 
 
 			month_dict = {1: "January", 2: "February", 3: "March", 4: "April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"September"}
@@ -447,30 +460,52 @@ def search():
 				for event in response_dict["events"]:
 
 					temp_song_list = []
+					index = 0
 
 					artist_url = "https://api.seatgeek.com/2/performers/" + str(event["performers"][0]["id"])
 					song_url = "http://developer.echonest.com/api/v4/song/search?api_key=WAIWXTP9XKUFFH8GO&format=json&artist_id=seatgeek:artist:" + str(event["performers"][0]["id"])+ "&sort=song_hotttnesss-desc&results=100"
-					
+					setlist_url = "http://api.setlist.fm/rest/0.1/search/setlists.json?artistName="+ event["performers"][0]["name"]
+
 
 					artist_dict = requests.get(artist_url).json()
 					song_dict = requests.get(song_url).json()
 
+					if SearchData.objects.first().category == "concert":
 
+						try:
+							setlist_dict = requests.get(setlist_url).json()
 
-					if artist_dict.get("links"):
-						link_list.append(artist_dict["links"][0]["url"])
-					else:
-						link_list.append("nothing")
+							while setlist_dict["setlists"]["setlist"][index]["sets"] == "" and index<int(setlist_dict["setlists"]["@total"]):
+								index=index+1
 
+							print index
+							if setlist_dict["setlists"]["setlist"][index]["sets"] != "":
 
-					if song_dict["response"]["status"]["message"] == "Success":
-						for j in range(len(song_dict["response"]["songs"])-1):
-							if min(len(song_dict["response"]["songs"][j]["title"]), len(song_dict["response"]["songs"][j+1]["title"])) > 3:
-								if song_dict["response"]["songs"][j]["title"][:4] != song_dict["response"]["songs"][j+1]["title"][:4]:
-									temp_song_list.append(song_dict["response"]["songs"][j]["title"])
+								name_list.append(event["performers"][0]["name"])
+
+							
 							else:
-								if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
-									temp_song_list.append(song_dict["response"]["songs"][j]["title"]) 
+								name_list.append("")
+						
+						except ValueError:
+							name_list.append("")
+
+
+
+						if artist_dict.get("links"):
+							link_list.append(artist_dict["links"][0]["url"])
+						else:
+							link_list.append("nothing")
+
+
+						if song_dict["response"]["status"]["message"] == "Success":
+							for j in range(len(song_dict["response"]["songs"])-1):
+								if min(len(song_dict["response"]["songs"][j]["title"]), len(song_dict["response"]["songs"][j+1]["title"])) > 3:
+									if song_dict["response"]["songs"][j]["title"][:4] != song_dict["response"]["songs"][j+1]["title"][:4]:
+										temp_song_list.append(song_dict["response"]["songs"][j]["title"])
+								else:
+									if song_dict["response"]["songs"][j]["title"] != song_dict["response"]["songs"][j+1]["title"]:
+										temp_song_list.append(song_dict["response"]["songs"][j]["title"]) 
 						
 
 					date_str = ""
@@ -500,7 +535,7 @@ def search():
         	
 				num_events= len(date_list) 
 			
-				return render_template("results.html", song_list = song_list, link_list=link_list, events=response_dict["events"], max_price = SearchData.objects.first().max_price, user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, per_page = SearchData.objects.first().per_page, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
+				return render_template("results.html", name_list = name_list, song_list = song_list, link_list=link_list, events=response_dict["events"], max_price = SearchData.objects.first().max_price, user_search= SearchData.objects.first().user_search, category= SearchData.objects.first().category, state = SearchData.objects.first().state, num_days= SearchData.objects.first().num_days, sort= SearchData.objects.first().sort_by, per_page = SearchData.objects.first().per_page, price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 			else:
 
 				return render_template("search.html", failed=True)

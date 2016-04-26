@@ -342,14 +342,23 @@
 				</li>
 
 				<div class = "row">
-				<ul class="results">
+				<ul class="results" style="margin-left:0px;">
 				
 				<li><a href="/favorite/{{api_data["events"][n]["id"]}}" class="button" style="background-color: #00688B; color:white;">Add to Favorites</a></li>
 
 				<li><a href="{{api_data["events"][n]["url"]}}" class="button" style="background-color: #00688B; color:white;">View Tickets on SeatGeek</a></li>
 
+				{% if link_list %}
 				{% if link_list[n] != "nothing" %}
 				<li><a href="{{link_list[n]}}" class="button" style="background-color: #00688B; color:white;">View Artist on Spotify</a></li>
+				{% endif %}
+				{% endif %}
+
+
+				{% if name_list %}
+				{% if name_list[n] != "" %}
+				<li><a href="/setlist/{{name_list[n]}}" class="button" style="background-color: #00688B; color:white;">View Latest Setlist</a></li>
+				{% endif %}
 				{% endif %}
 
 				</ul>
