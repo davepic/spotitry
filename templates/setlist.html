@@ -6,11 +6,15 @@
 
 	<h1>{{artist}}'s Last Setlist</h1>
 
-	<ul style="list-style:none;">
+	<ul style=  "list-style-type: none; margin:0 auto;">
 	
 	{% if setlist %}
-		{% for song in setlist %}
-			<li>{{song}}</li>
+		{% for n in range(setlist|length) %}
+			{% if setlist[n][:6] != "Encore" %}
+				<li style= "padding-left:0px;">{{n+1}}. {{setlist[n]}}</li>
+			{% else %}
+				<li><strong>{{setlist[n]}}</strong></li>
+			{% endif %}
 		{% endfor %}
 	{% else %}
 		<li>No Songs Found</li>

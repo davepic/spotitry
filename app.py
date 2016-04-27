@@ -607,9 +607,15 @@ def setlist(artist):
 			if type(setlist_dict["setlists"]["setlist"][index]["sets"]["set"]) is list:
 				for show_setlist in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]:
 					if "@encore" in show_setlist.keys():
-						setlist.append("Encore " + show_setlist["@encore"])
-					for song in show_setlist["song"]:
-						setlist.append(song["@name"])
+						setlist.append("Encore " + show_setlist["@encore"]+" :")
+						#print show_setlist["@encore"]
+					if type(show_setlist["song"]) is list:
+						for song in show_setlist["song"]:
+							setlist.append(song["@name"])
+							print song["@name"]
+					else:
+						setlist.append(show_setlist["song"]["@name"])
+						print show_setlist["song"]["@name"]
 
 			else:
 				for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
