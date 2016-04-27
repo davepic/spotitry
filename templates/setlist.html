@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %} Search Results {% endblock %}
+
+
+{% block body %}
+
+	<h1>{{artist}}'s Last Setlist</h1>
+
+	<ul style="list-style:none;">
+	
+	{% if setlist %}
+		{% for song in setlist %}
+			<li>{{song}}</li>
+		{% endfor %}
+	{% else %}
+		<li>No Songs Found</li>
+
+	{% endif %}
+
+	</ul>
+
+
+
+
+
+
+
+{% endblock %}

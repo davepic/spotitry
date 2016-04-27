@@ -322,12 +322,13 @@ def search():
 									for show_setlist in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]:
 										if "@encore" in show_setlist.keys():
 											print "Encore " + show_setlist["@encore"]
-										for song in show_setlist["song"]:
-											print song["@name"]
+										#for song in show_setlist["song"]:
+											#print song["@name"]
 
 								else:
-									for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
-										print song["@name"]
+									pass
+									#for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
+										#print song["@name"]
 							else:
 								name_list.append("")
 						
@@ -478,7 +479,7 @@ def search():
 							while setlist_dict["setlists"]["setlist"][index]["sets"] == "" and index<int(setlist_dict["setlists"]["@total"]):
 								index=index+1
 
-							print index
+							
 							if setlist_dict["setlists"]["setlist"][index]["sets"] != "":
 
 								name_list.append(event["performers"][0]["name"])
@@ -585,6 +586,41 @@ def event(id):
 	price_list.append((str(event_dict["stats"]["average_price"])+'0', str(event_dict["stats"]["lowest_price"])+'0', str(event_dict["stats"]["highest_price"])+'0'))
 	
 	return render_template("event.html", price_list=price_list, api_data=event_dict, time_list=time_list, date_list=date_list)
+
+
+@app.route("/setlist/<artist>")
+def setlist(artist):
+
+	setlist_url = "http://api.setlist.fm/rest/0.1/search/setlists.json?artistName=" + artist
+	setlist = []
+	index = 0
+
+	try:
+		setlist_dict = requests.get(setlist_url).json()
+
+		while setlist_dict["setlists"]["setlist"][index]["sets"] == "" and index<int(setlist_dict["setlists"]["@total"]):
+			index=index+1
+
+		print index
+		if setlist_dict["setlists"]["setlist"][index]["sets"] != "":
+
+			if type(setlist_dict["setlists"]["setlist"][index]["sets"]["set"]) is list:
+				for show_setlist in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]:
+					if "@encore" in show_setlist.keys():
+						setlist.append("Encore " + show_setlist["@encore"])
+					for song in show_setlist["song"]:
+						setlist.append(song["@name"])
+
+			else:
+				for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
+					setlist.append(song["@name"])
+					
+	except ValueError:
+		pass
+
+	return render_template("setlist.html", artist= artist, setlist=setlist)
+
+
 
 
 @app.route("/favorite/<id>")
