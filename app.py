@@ -4,10 +4,18 @@ from flask.ext.login import LoginManager, login_user, logout_user, login_require
 from flask.ext.mongoengine.wtf import model_form
 from wtforms import PasswordField
 import datetime
+import urllib
+import base64
+import json
 from datetime import *
 from flask_mail import Mail, Message
 import requests.packages.urllib3
 from flask.ext.paginate import Pagination
+
+
+#WORKS TO PREVENT DUPS BUT MESSES UP CONNECTION
+from signal import signal, SIGPIPE, SIG_DFL
+signal(SIGPIPE,SIG_DFL)
 
 requests.packages.urllib3.disable_warnings()
 
@@ -24,6 +32,37 @@ app.config.update(dict(
 	MAIL_PASSWORD = 'password'
 
 	))
+
+CLIENT_ID = "68eb0b1766a64f8294da279e662232c0"
+CLIENT_SECRET = ""
+
+SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
+SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
+SPOTIFY_API_BASE_URL = "https://api.spotify.com"
+API_VERSION = "v1"
+SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
+
+
+# Server-side Parameters
+CLIENT_SIDE_URL = "http://0.0.0.0"
+PORT = 5000
+REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
+SCOPE = "playlist-modify-public playlist-modify-private"
+STATE = ""
+SHOW_DIALOG_bool = True
+SHOW_DIALOG_str = str(SHOW_DIALOG_bool).lower()
+
+
+auth_query_parameters = {
+    "response_type": "code",
+    "redirect_uri": REDIRECT_URI,
+    "scope": SCOPE,
+    # "state": STATE,
+    # "show_dialog": SHOW_DIALOG_str,
+    "client_id": CLIENT_ID
+}
+
+
 
 mailer = Mail(app)
 
@@ -101,6 +140,64 @@ class SearchData(db.Document):
 	poster = db.StringField(required=True)
 	per_page = db.StringField(required=True)
 	max_price = db.StringField(required=False)
+
+
+@app.route("/spotify")
+def spotify():
+	url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
+	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
+	return redirect(auth_url)
+
+@app.route("/callback/q", methods=["POST", "GET"])
+def callback():
+
+
+	auth_token = request.args['code']
+	code_payload = {
+    	"grant_type": "authorization_code",
+        "code": str(auth_token),
+        "redirect_uri": REDIRECT_URI
+    }
+	base64encoded = base64.b64encode("{}:{}".format(CLIENT_ID, CLIENT_SECRET))
+	headers = {"Authorization": "Basic " + base64encoded}
+	post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
+
+	# Auth Step 5: Tokens are Returned to Application
+	response_data = json.loads(post_request.text)
+	access_token = response_data["access_token"]
+	refresh_token = response_data["refresh_token"]
+	token_type = response_data["token_type"]
+	expires_in = response_data["expires_in"]
+
+    # Auth Step 6: Use the access token to access Spotify API
+	authorization_header = {"Authorization":"Bearer " + access_token, "Content-Type": "application/json"}
+
+    # Get profile data
+	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
+	
+
+
+    # Get user playlist data
+	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
+
+	request_data = {"name": "Setlist Playlist"}
+
+	try:
+
+		response = requests.post(playlist_api_endpoint, data="{\"name\":\"Setlist Playlist\"}", headers=authorization_header).json()
+		song_url = response["tracks"]["href"]
+		song_response = requests.post(song_url + "?uris=spotify:track:2dcoDVcOc9hGPbtZFtpcw3", headers=authorization_header).json()
+
+	except IOError:
+		pass
+
+
+
+	return render_template("spotify.html")
+
+
+@app.route("/playlist")
 
 @app.route("/")
 def hello():
