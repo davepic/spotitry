@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.login import LoginManager, login_user, logout_user, login_required, current_user
 from flask.ext.mongoengine.wtf import model_form
@@ -745,10 +745,15 @@ def setlist(artist):
 	except ValueError:
 		pass
 
-	return render_template("setlist.html", artist= artist, setlist=setlist)
+	session['setlist'] = setlist
+	session['artist'] = artist
+	return redirect("/test")
+	#return render_template("setlist.html", artist= artist, setlist=setlist)
 
 
-
+@app.route("/test")
+def test():
+	return render_template("setlist.html", artist= session.pop('artist'), setlist=session.pop('setlist'))
 
 @app.route("/favorite/<id>")
 @login_required
