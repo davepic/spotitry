@@ -14,8 +14,8 @@ from flask.ext.paginate import Pagination
 
 
 #WORKS TO PREVENT DUPS BUT MESSES UP CONNECTION
-from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE,SIG_DFL)
+#from signal import signal, SIGPIPE, SIG_DFL
+#signal(SIGPIPE,SIG_DFL)
 
 requests.packages.urllib3.disable_warnings()
 
@@ -34,7 +34,7 @@ app.config.update(dict(
 	))
 
 CLIENT_ID = "68eb0b1766a64f8294da279e662232c0"
-CLIENT_SECRET = ""
+CLIENT_SECRET = "8a2d182155d64971846f16faae25f1e4"
 
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
@@ -151,6 +151,8 @@ def spotify():
 @app.route("/callback/q", methods=["POST", "GET"])
 def callback():
 
+	setlist_ids = {}
+
 
 	auth_token = request.args['code']
 	code_payload = {
@@ -183,11 +185,33 @@ def callback():
 
 	request_data = {"name": "Setlist Playlist"}
 
+	
+
 	try:
 
 		response = requests.post(playlist_api_endpoint, data="{\"name\":\"Setlist Playlist\"}", headers=authorization_header).json()
 		song_url = response["tracks"]["href"]
 		song_response = requests.post(song_url + "?uris=spotify:track:2dcoDVcOc9hGPbtZFtpcw3", headers=authorization_header).json()
+
+		# Get profile data
+		user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+		profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
+    	
+
+    	# Get user playlist data
+		playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
+		playlists_data = requests.get(playlist_api_endpoint, headers=authorization_header).json()
+    	
+		for playlist in playlists_data["items"]:
+			if setlist_ids.get(playlist["name"]) == None:
+				setlist_ids[playlist["name"]] = True
+			else:
+				playlist_url = playlist["href"] + "/followers"
+				playlist_response = requests.delete(playlist_url, headers=authorization_header)
+
+		print playlists_data["items"][0]["name"]
+		print playlists_data["items"][0]["href"]
+
 
 	except IOError:
 		pass
