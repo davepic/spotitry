@@ -9,9 +9,11 @@
 	<ul style=  "list-style-type: none; margin:0 auto;">
 	
 	{% if setlist %}
+		{% set count = 1 %}
 		{% for n in range(setlist|length) %}
 			{% if setlist[n][:6] != "Encore" %}
-				<li style= "padding-left:0px;">{{n+1}}. {{setlist[n]}}</li>
+				<li style= "padding-left:0px;">{{count}}. {{setlist[n]}}</li>
+				{% set count = count + 1 %}
 			{% else %}
 				<li><strong>{{setlist[n]}}</strong></li>
 			{% endif %}
