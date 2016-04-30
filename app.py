@@ -209,8 +209,7 @@ def callback():
 				playlist_url = playlist["href"] + "/followers"
 				playlist_response = requests.delete(playlist_url, headers=authorization_header)
 
-		print playlists_data["items"][0]["name"]
-		print playlists_data["items"][0]["href"]
+		
 
 
 	except IOError:
@@ -429,27 +428,16 @@ def search():
 							while setlist_dict["setlists"]["setlist"][index]["sets"] == "" and index<int(setlist_dict["setlists"]["@total"]):
 								index=index+1
 
-							print index
+							
 							if setlist_dict["setlists"]["setlist"][index]["sets"] != "":
 
 								name_list.append(event["performers"][0]["name"])
 
 								num_sets = len(setlist_dict["setlists"]["setlist"][index]["sets"]["set"])
 						
-								print num_sets
-								print setlist_url
+								
 
-								if type(setlist_dict["setlists"]["setlist"][index]["sets"]["set"]) is list:
-									for show_setlist in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]:
-										if "@encore" in show_setlist.keys():
-											print "Encore " + show_setlist["@encore"]
-										#for song in show_setlist["song"]:
-											#print song["@name"]
-
-								else:
-									pass
-									#for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
-										#print song["@name"]
+								
 							else:
 								name_list.append("")
 						
@@ -500,7 +488,7 @@ def search():
         	
 				num_events= len(date_list)
 
-				print setlist
+				
 				
 				return render_template("results.html", name_list = name_list, song_list = song_list, link_list = link_list, max_price = request.form["max_price"], events=response_dict["events"], user_search= request.form["user_search"], category= request.form["category_search"], state = request.form["state_search"], num_days= request.form["num_days"], sort=request.form["sort_by"], per_page= request.form["per_page"], price_list=price_list, api_data=response_dict, time_list=time_list, date_list=date_list, num_events=num_events, pagination = pagination)
 				
@@ -716,27 +704,28 @@ def setlist(artist):
 	setlist = []
 	index = 0
 
+
 	try:
 		setlist_dict = requests.get(setlist_url).json()
 
 		while setlist_dict["setlists"]["setlist"][index]["sets"] == "" and index<int(setlist_dict["setlists"]["@total"]):
 			index=index+1
 
-		print index
+		
 		if setlist_dict["setlists"]["setlist"][index]["sets"] != "":
 
 			if type(setlist_dict["setlists"]["setlist"][index]["sets"]["set"]) is list:
 				for show_setlist in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]:
 					if "@encore" in show_setlist.keys():
 						setlist.append("Encore " + show_setlist["@encore"]+" :")
-						#print show_setlist["@encore"]
+						
 					if type(show_setlist["song"]) is list:
 						for song in show_setlist["song"]:
 							setlist.append(song["@name"])
-							print song["@name"]
+							
 					else:
 						setlist.append(show_setlist["song"]["@name"])
-						print show_setlist["song"]["@name"]
+						
 
 			else:
 				for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
