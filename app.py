@@ -144,6 +144,8 @@ class SearchData(db.Document):
 
 @app.route("/spotify")
 def spotify():
+
+
 	url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
 	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
 	return redirect(auth_url)
@@ -152,6 +154,8 @@ def spotify():
 def callback():
 
 	setlist_ids = {}
+	setlist = session.pop("setlist")
+	artist_name = session.pop("artist")
 
 
 	auth_token = request.args['code']
@@ -178,36 +182,59 @@ def callback():
 	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 	
-
-
     # Get user playlist data
 	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
 
-	request_data = {"name": "Setlist Playlist"}
+	setlist_name = raw_input('Enter Setlist Name: ')
+
+	request_data = {"name": setlist_name}
 
 	
 
 	try:
 
-		response = requests.post(playlist_api_endpoint, data="{\"name\":\"Setlist Playlist\"}", headers=authorization_header).json()
+		response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + setlist_name + "\"}", headers=authorization_header).json()
 		song_url = response["tracks"]["href"]
-		song_response = requests.post(song_url + "?uris=spotify:track:2dcoDVcOc9hGPbtZFtpcw3", headers=authorization_header).json()
+
+		for song in setlist:
+			if song[:6] != "Encore":
+
+				try:
+					track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song +"%20artist:" + artist_name + "&type=track").json()
+					
+					if track_info["tracks"]["items"] == []:
+						
+						track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song + "&type=track").json()
+
+						if track_info["tracks"]["items"] == []:
+							print song
+						else:
+							song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+
+					else:
+						song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+
+				except ValueError:
+					print song
+
+				
+		#song_response = requests.post(song_url + "?uris=spotify:track:2dcoDVcOc9hGPbtZFtpcw3", headers=authorization_header).json()
 
 		# Get profile data
-		user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
-		profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
+		#user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+		#profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
     	
 
     	# Get user playlist data
-		playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
-		playlists_data = requests.get(playlist_api_endpoint, headers=authorization_header).json()
+		#playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
+		#playlists_data = requests.get(playlist_api_endpoint, headers=authorization_header).json()
     	
-		for playlist in playlists_data["items"]:
-			if setlist_ids.get(playlist["name"]) == None:
-				setlist_ids[playlist["name"]] = True
-			else:
-				playlist_url = playlist["href"] + "/followers"
-				playlist_response = requests.delete(playlist_url, headers=authorization_header)
+		#for playlist in playlists_data["items"]:
+		#	if setlist_ids.get(playlist["name"]) == None:
+		#		setlist_ids[playlist["name"]] = True
+		#	else:
+		#		playlist_url = playlist["href"] + "/followers"
+		#		playlist_response = requests.delete(playlist_url, headers=authorization_header)
 
 		
 
@@ -736,13 +763,9 @@ def setlist(artist):
 
 	session['setlist'] = setlist
 	session['artist'] = artist
-	return redirect("/test")
-	#return render_template("setlist.html", artist= artist, setlist=setlist)
+	return render_template("setlist.html", artist= artist, setlist=setlist)
 
 
-@app.route("/test")
-def test():
-	return render_template("setlist.html", artist= session.pop('artist'), setlist=session.pop('setlist'))
 
 @app.route("/favorite/<id>")
 @login_required
