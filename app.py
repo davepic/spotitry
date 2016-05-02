@@ -156,6 +156,8 @@ def callback():
 	setlist_ids = {}
 	setlist = session.pop("setlist")
 	artist_name = session.pop("artist")
+	songs = []
+	errors = []
 
 
 	auth_token = request.args['code']
@@ -207,23 +209,18 @@ def callback():
 						track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song + "&type=track").json()
 
 						if track_info["tracks"]["items"] == []:
-							print song
+							errors.append(song)
 						else:
 							song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
-
+							songs.append(song)
 					else:
 						song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+						songs.append(song)
 
 				except ValueError:
 					print song
 
 				
-		#song_response = requests.post(song_url + "?uris=spotify:track:2dcoDVcOc9hGPbtZFtpcw3", headers=authorization_header).json()
-
-		# Get profile data
-		#user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
-		#profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
-    	
 
     	# Get user playlist data
 		#playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
@@ -244,7 +241,7 @@ def callback():
 
 
 
-	return render_template("spotify.html")
+	return render_template("spotify.html", songs = songs, errors=errors)
 
 
 @app.route("/playlist")
