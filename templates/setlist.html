@@ -11,11 +11,12 @@
 	{% if setlist %}
 		{% set count = 1 %}
 		{% for n in range(setlist|length) %}
-			{% if setlist[n][:6] != "Encore" %}
-				<li style= "padding-left:0px;">{{count}}. {{setlist[n]}}</li>
+			{% if setlist[n][0][:6] != "Encore" %}
+				<li style= "padding-left:0px;">{{count}}. {{setlist[n][0]}}{%if setlist[n][1]!=""%} ({{setlist[n][1]}} Cover){% endif %}</li>
+				
 				{% set count = count + 1 %}
 			{% else %}
-				<li><strong>{{setlist[n]}}</strong></li>
+				<li><strong>{{setlist[n][0]}}</strong></li>
 			{% endif %}
 		{% endfor %}
 
