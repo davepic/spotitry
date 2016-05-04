@@ -199,26 +199,31 @@ def callback():
 		song_url = response["tracks"]["href"]
 
 		for song in setlist:
-			if song[:6] != "Encore":
+			if song[0][:6] != "Encore":
 
 				try:
-					track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song +"%20artist:" + artist_name + "&type=track").json()
+					track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song[0] +"%20artist:" + artist_name + "&type=track").json()
 					
 					if track_info["tracks"]["items"] == []:
 						
-						track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song + "&type=track").json()
+						if song[1] != "":
+							#track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song + "&type=track").json()
+							track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song[0] +"%20artist:" + song[1] + "&type=track").json()
+						
 
-						if track_info["tracks"]["items"] == []:
-							errors.append(song)
+							if track_info["tracks"]["items"] == []:
+								errors.append(song)
+							else:
+								song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+								songs.append(song)
 						else:
-							song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
-							songs.append(song)
+							errors.append(song)
 					else:
 						song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
 						songs.append(song)
 
 				except ValueError:
-					print song
+					errors.append(song)
 
 				
 

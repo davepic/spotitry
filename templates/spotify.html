@@ -9,7 +9,7 @@
 	{% set song_count = 1 %}
 	{% for song in songs %}
 
-		<li>{{song_count}}. {{song}}</li>
+		<li>{{song_count}}. {{song[0]}}{%if song[1]!="" %} ({{song[1]}} Cover){% endif %}</li>
 		{% set song_count = song_count + 1 %}
 
 	{% endfor %}
@@ -20,7 +20,7 @@
 	{% set error_count = 1 %}
 	{% for error in errors %}
 
-		<li>{{error_count}}. {{error}}</li>
+		<li>{{error_count}}. {{error[0]}}{%if error[1]!="" %} ({{error[1]}} Cover){% endif %}</li>
 		{% set error_count = error_count + 1 %}
 
 	{% endfor %}
