@@ -244,7 +244,7 @@ def callback():
 	return render_template("spotify.html", songs = songs, errors=errors)
 
 
-@app.route("/playlist")
+
 
 @app.route("/")
 def hello():
@@ -741,23 +741,33 @@ def setlist(artist):
 			if type(setlist_dict["setlists"]["setlist"][index]["sets"]["set"]) is list:
 				for show_setlist in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]:
 					if "@encore" in show_setlist.keys():
-						setlist.append("Encore " + show_setlist["@encore"]+" :")
+						setlist.append(("Encore " + show_setlist["@encore"]+" :", ""))
 						
 					if type(show_setlist["song"]) is list:
 						for song in show_setlist["song"]:
-							setlist.append(song["@name"])
+							if "cover" in song.keys():
+								setlist.append((song["@name"], song["cover"]["@name"]))
+							else:
+								setlist.append((song["@name"], ""))
 							
 					else:
-						setlist.append(show_setlist["song"]["@name"])
+						if "cover" in show_setlist["song"].keys():
+							setlist.append((show_setlist["song"]["@name"], show_setlist["song"]["cover"]["@name"])) 
+						else:
+							setlist.append((show_setlist["song"]["@name"], ""))
 						
 
 			else:
 				for song in setlist_dict["setlists"]["setlist"][index]["sets"]["set"]["song"]:
-					setlist.append(song["@name"])
+					if "cover" in song.keys():
+						setlist.append((song["@name"], song["cover"]["@name"]))
+					else:
+						setlist.append((song["@name"], ""))
 					
 	except ValueError:
 		pass
 
+	print setlist
 	session['setlist'] = setlist
 	session['artist'] = artist
 	return render_template("setlist.html", artist= artist, setlist=setlist)
