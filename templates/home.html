@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Spotify{% endblock %}
+
+{% block body %}
+
+	<h1>Spotify</h1>
+	
+		
+		{% if current_song %}
+
+		<h4>Now Playing: {{current_song[0]}}</h4>
+
+
+
+		<form action="/spotify" method="POST">
+			
+			<select name="playlist" style="width:50%; margin:0 auto; margin-bottom:10px;">
+	
+				<option value="" selected>Select Playlist</option>
+
+				{% for playlist in playlists %}
+					<option value={{playlist}}>{{playlist}}</option>
+				
+				{% endfor %}
+				
+	
+		</select>
+
+
+		<div>
+		<input checked="checked" name="answer" type="radio" value="save" /> Save
+		<input name="answer" type="radio" value="delete" /> Delete
+		</div>
+
+
+		<div>
+			<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Submit</button>
+		</div>
+
+
+		</form>
+
+		{% endif %}
+
+
+
+{% endblock %}
