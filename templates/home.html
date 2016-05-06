@@ -1,14 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Spotify{% endblock %}
+{% block title %}Spotitry{% endblock %}
 
 {% block body %}
 
-	<h1>Spotify</h1>
+	<h1 style="color:#090A0A;">Spotify</h1>
 	
 		
 		{% if current_song %}
 
 		<h4>Now Playing: {{current_song[0]}}</h4>
+
+		<h4>Artist: {{artist_name[0]}}</h4>
+
+		<img src={{album_image[0]}} style="height:20%; width:20%; margin-bottom: 10px;">
+
 
 
 
@@ -34,11 +39,14 @@
 
 
 		<div>
-			<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Submit</button>
+			<button class="postfix search-button" style="width:10%; height:5%; margin-bottom: 5px; background-color: #090A0A;" type="submit">Submit</button>
 		</div>
 
+		
 
 		</form>
+
+		<div><button class="postfix search-button" style="width:10%; height:5%; background-color:#090A0A;" ><a href="/" class="white">Refresh</a></button></div>
 
 		{% endif %}
 

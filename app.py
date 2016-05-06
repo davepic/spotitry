@@ -74,6 +74,8 @@ def playlist():
 @app.route("/spotify", methods=["POST", "GET"])
 def spotify():
 
+	REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
+
 	auth_query_parameters = {
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
@@ -126,7 +128,7 @@ def playlists():
 	for playlist in playlists_data["items"]:
 		playlists.append(playlist["name"])
 
-	return render_template("home.html", playlists = playlists, current_song= session["current_song"])
+	return render_template("home.html", playlists = playlists, current_song= session["current_song"], artist_name=session["artist_name"], album_image= session["album_image"])
 
 @app.route("/callback/q", methods=["POST", "GET"])
 def callback():
@@ -232,13 +234,21 @@ def hello():
 
 	song_info = requests.get("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=dpiccolella&api_key=e8d959e5d2743dca3d2962338084b0ed&format=json").json()
 	current_song = []
+	album_image = []
+	artist_name = []
+
 
 
 	if "@attr" in song_info["recenttracks"]["track"][0].keys():
 		if song_info["recenttracks"]["track"][0]["@attr"]["nowplaying"] == "true":
 			current_song.append(song_info["recenttracks"]["track"][0]["name"])
+			album_image.append(song_info["recenttracks"]["track"][0]["image"][3]["#text"])
+			artist_name.append(song_info["recenttracks"]["track"][0]["artist"]["#text"])
+			#print song_info["recenttracks"]["track"][0]["image"][1]["#text"]
 
 	session["current_song"] = current_song
+	session["album_image"] = album_image
+	session["artist_name"] = artist_name
 
 	return redirect("/playlist")
 
