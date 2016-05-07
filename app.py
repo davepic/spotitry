@@ -128,7 +128,7 @@ def playlists():
 	for playlist in playlists_data["items"]:
 		playlists.append(playlist["name"])
 
-	return render_template("home.html", playlists = playlists, current_song= session["current_song"], artist_name=session["artist_name"], album_image= session["album_image"])
+	return render_template("home.html", playlists = playlists, current_song= session["current_song"], artist_name=session["artist_name"], album_image= session["album_image"], now_playing = session["now_playing"])
 
 @app.route("/callback/q", methods=["POST", "GET"])
 def callback():
@@ -236,21 +236,37 @@ def hello():
 	current_song = []
 	album_image = []
 	artist_name = []
+	now_playing = False
 
 
+	current_song.append(song_info["recenttracks"]["track"][0]["name"])
+	album_image.append(song_info["recenttracks"]["track"][0]["image"][3]["#text"])
+	artist_name.append(song_info["recenttracks"]["track"][0]["artist"]["#text"])
+	#print song_info["recenttracks"]["track"][0]["image"][1]["#text"]
 
 	if "@attr" in song_info["recenttracks"]["track"][0].keys():
-		if song_info["recenttracks"]["track"][0]["@attr"]["nowplaying"] == "true":
-			current_song.append(song_info["recenttracks"]["track"][0]["name"])
-			album_image.append(song_info["recenttracks"]["track"][0]["image"][3]["#text"])
-			artist_name.append(song_info["recenttracks"]["track"][0]["artist"]["#text"])
-			#print song_info["recenttracks"]["track"][0]["image"][1]["#text"]
+
+		if song_info["recenttracks"]["track"][0].get("@attr")["nowplaying"] == "true":
+			now_playing = True
 
 	session["current_song"] = current_song
 	session["album_image"] = album_image
 	session["artist_name"] = artist_name
+	session["now_playing"] = now_playing
 
 	return redirect("/playlist")
+
+@app.route("/delete", methods=["POST", "GET"])
+def delete():
+
+
+	return render_template("delete.html", playlist= request.form["playlist"])
+
+@app.route("/save", methods=["POST", "GET"])
+def save():
+
+
+	return render_template("save.html", playlist= request.form["playlist"])
 
 
 

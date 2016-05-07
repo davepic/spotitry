@@ -16,22 +16,27 @@
 		</li>
 
 		<ul>
+
+			{% if now_playing %}
 			<li><h4>Now Playing: {{current_song[0]}}</h4></li>
+			{% else %}
+			<li><h4>Last Played: {{current_song[0]}}</h4></li>
+			{% endif %}
 
 			<li><h4>Artist: {{artist_name[0]}}</h4></li>
 		
 
 		
-		<form action="/spotify" method="POST">
+		<form method="POST">
 
 			<li>
 			
-			<select name="playlist" style="width:100%; margin:0 auto; margin-bottom:10px;">
+			<select name="playlist" style="width:250px; margin:0 auto; margin-bottom:10px;">
 	
 				<option value="" selected>Select Playlist</option>
 
 				{% for playlist in playlists %}
-					<option value={{playlist}}>{{playlist}}</option>
+					<option value="{{playlist}}">{{playlist}}</option>
 				
 				{% endfor %}
 				
@@ -40,36 +45,52 @@
 			</li>
 
 
+
+		<!--
 		<li>
 		
-		<input checked="checked" name="answer" type="radio" value="save" /> Save
-		<input name="answer" type="radio" value="delete" /> Delete
+
+
+		<button class="postfix search-button" style="background-color:green;"><input checked="checked" name="answer" type="radio" value="save" style="background-color:green; margin:0 auto;" />Save</button>
+		<button class="postfix search-button" style="background-color:red;"><input name="answer" type="radio" value="delete" style="background-color:green; margin:0 auto;" />Delete</button>
 		
 		</li>
 
+		!-->
 
-		<li>
-			<button class="postfix search-button" style="width:30%; height:5%; margin-bottom: 5px; background-color: #090A0A;" type="submit">Submit</button>
+		<ul style="list-style:none; margin-left:0px; margin-bottom:50px;">
+		<li style="display:inline;">
+			<button class="postfix search-button" style="width:120px; height:60px; margin-bottom: 5px; margin-top: 5px; background-color: #46BD53; margin-left:0px;" formaction="/save" type="submit">Save</button>
 		</li>
+
+		<li style="display:inline;">
+			<button class="postfix search-button" style="width:120px; height:60px; margin-bottom: 5px; margin-top: 5px; background-color: red;" formaction="/delete" type="submit">Delete</button>
+		</li>
+		</ul>
 		
+
+		<div><button class="postfix search-button" style="width:100px; height:30px; background-color:#090A0A;" ><a href="/" class="white">Refresh</a></button></div>
 
 		</form>
 
-		<li>
-		<div><button class="postfix search-button" style="width:30%; height:5%; background-color:#090A0A;" ><a href="/" class="white">Refresh</a></button></div>
-		</li>
-		
+		</ul>
 		</ul>
 
 		
+		
+		
+		
+		
 
-		</ul>
+		
+
+		
 
 		{% else %}
 
-			<p style="color:red;">Spotify not currently playing</p>
+			<p style="color:red;">No recent songs loaded</p>
 
-			<div><button class="postfix search-button" style="width:30%; height:5%; background-color:#090A0A;" ><a href="/" class="white">Refresh</a></button></div>
+			<div><button class="postfix search-button" style="width:10%; height:5%; background-color:#090A0A; " ><a href="/" class="white">Refresh</a></button></div>
 
 		{% endif %}
 
