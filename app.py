@@ -71,8 +71,13 @@ def playlist():
 	return redirect(auth_url)
 
 
-@app.route("/spotify", methods=["POST", "GET"])
-def spotify():
+
+
+@app.route("/delete", methods=["POST", "GET"])
+def delete():
+
+	session["playlist"] = request.form["playlist"]
+
 
 	REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
 
@@ -87,6 +92,7 @@ def spotify():
 
 	url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
 	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
+	
 	return redirect(auth_url)
 
 
@@ -126,20 +132,22 @@ def playlists():
 	playlists_data = requests.get(playlist_api_endpoint, headers=authorization_header).json()
 
 	for playlist in playlists_data["items"]:
-		playlists.append(playlist["name"])
+		playlists.append((playlist["name"], playlist["id"]))
 
 	return render_template("home.html", playlists = playlists, current_song= session["current_song"], artist_name=session["artist_name"], album_image= session["album_image"], now_playing = session["now_playing"])
 
 @app.route("/callback/q", methods=["POST", "GET"])
 def callback():
 
-	setlist_ids = {}
-	playlist = request.form["playlist"]
-	save_delete = request.form["answer"]
-	current_song = session.pop("current_song")
+	
+	#playlist = request.form["playlist"]
+	#save_delete = request.form["answer"]
+	#current_song = session.pop("current_song")
+
+	print "yes"
 	
 
-
+	REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
 	auth_token = request.args['code']
 	code_payload = {
     	"grant_type": "authorization_code",
@@ -165,66 +173,27 @@ def callback():
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 	
     # Get user playlist data
-	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
-
-	
-
-	
-
-	try:
-
-		response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + setlist_name + "\"}", headers=authorization_header).json()
-		song_url = response["tracks"]["href"]
-
-		for song in setlist:
-			if song[0][:6] != "Encore":
-
-				try:
-					track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song[0] +"%20artist:" + artist_name + "&type=track").json()
-					
-					if track_info["tracks"]["items"] == []:
-						
-						if song[1] != "":
-							#track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song + "&type=track").json()
-							track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song[0] +"%20artist:" + song[1] + "&type=track").json()
-						
-
-							if track_info["tracks"]["items"] == []:
-								errors.append(song)
-							else:
-								song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
-								songs.append(song)
-						else:
-							errors.append(song)
-					else:
-						song_response = requests.post(song_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
-						songs.append(song)
-
-				except ValueError:
-					errors.append(song)
-
-				
-
-    	# Get user playlist data
-		#playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
-		#playlists_data = requests.get(playlist_api_endpoint, headers=authorization_header).json()
-    	
-		#for playlist in playlists_data["items"]:
-		#	if setlist_ids.get(playlist["name"]) == None:
-		#		setlist_ids[playlist["name"]] = True
-		#	else:
-		#		playlist_url = playlist["href"] + "/followers"
-		#		playlist_response = requests.delete(playlist_url, headers=authorization_header)
-
-		
+	playlist_api_endpoint = "{}/playlists/{}/tracks".format(profile_data["href"], session["playlist"])
 
 
-	except IOError:
-		pass
+	song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["current_song"][0]+  "&artist:" + session["artist_name"][0]+ "&type=track"
+	print song_endpoint
+	song_data = requests.get(song_endpoint).json()
 
+	song_uri = song_data["tracks"]["items"][0]["uri"]
 
+	request_data = "{\"tracks\": [{\"uri\":\"" + song_uri+ "\"}]}"
 
-	return render_template("spotify.html")
+	print request_data
+
+	response = requests.delete(playlist_api_endpoint, data = request_data, headers= authorization_header).json()
+
+	print response
+
+	if response.get("snapshot_id"):
+		return render_template("delete.html", success= True, deleted_song=session.pop("current_song"))
+	else:
+		return render_template("delete.html", success=False)
 
 
 
@@ -241,6 +210,7 @@ def hello():
 
 	current_song.append(song_info["recenttracks"]["track"][0]["name"])
 	album_image.append(song_info["recenttracks"]["track"][0]["image"][3]["#text"])
+
 	artist_name.append(song_info["recenttracks"]["track"][0]["artist"]["#text"])
 	#print song_info["recenttracks"]["track"][0]["image"][1]["#text"]
 
@@ -256,11 +226,7 @@ def hello():
 
 	return redirect("/playlist")
 
-@app.route("/delete", methods=["POST", "GET"])
-def delete():
 
-
-	return render_template("delete.html", playlist= request.form["playlist"])
 
 @app.route("/save", methods=["POST", "GET"])
 def save():

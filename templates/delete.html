@@ -4,7 +4,15 @@
 {% block body %}
 
 
-	{{playlist}}
+	{% if success %}
+
+		<h1>{{deleted_song[0]}}</h1>
+
+
+	{% else %}
+		<h1>Error</h1>
+
+	{% endif %}
 
 
 
