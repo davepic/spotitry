@@ -4,7 +4,7 @@
 {% block body %}
 	<div class = "row">
 	<div class= "small-12 columns">
-	<h1 style="color:#090A0A;">Spotify</h1>
+	<h1 style="color:#090A0A;">Spotitry</h1>
 	
 		
 		{% if current_song %}
@@ -64,6 +64,12 @@
 		
 
 		</ul>
+
+		{% else %}
+
+			<p style="color:red;">Spotify not currently playing</p>
+
+			<div><button class="postfix search-button" style="width:30%; height:5%; background-color:#090A0A;" ><a href="/" class="white">Refresh</a></button></div>
 
 		{% endif %}
 
