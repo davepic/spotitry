@@ -2,17 +2,50 @@
 {% block title %}Spotitry{% endblock %}
 
 {% block body %}
+	<div class = "row">
+	<div class= "small-12 columns">
+	<h1 style="color:#090A0A;">Spotitry</h1>
+
+	<h2 style="color:#090A0A;">Delete Summary</h2>
+	
+		
+		{% if success %}
+
+		<ul class= "results">
+
+		<li>
+			<img src={{album_image[0]}} style="height:100%; width:100%; margin-bottom: 10px;">
+		</li>
+
+		<ul>
+
+			{% if now_playing %}
+			<li><h4>Now Playing: {{deleted_song[0]}}</h4></li>
+			{% else %}
+			<li><h4>Last Played: {{deleted_song[0]}}</h4></li>
+			{% endif %}
+
+			<li><h4>Artist: {{artist_name[0]}}</h4></li>
+		
+			<li><h4>Playlist: {{playlist_name}}</h4></li>
+
+		
+
+		</ul>
+		</ul>
 
 
-	{% if success %}
 
-		<h1>{{deleted_song[0]}}</h1>
+		{% else %}
 
+			<p style="color:red;">No recent songs loaded</p>
 
-	{% else %}
-		<h1>Error</h1>
+			<div><button class="postfix search-button" style="width:10%; height:5%; background-color:#090A0A; " ><a href="/" class="white">Refresh</a></button></div>
 
-	{% endif %}
+		{% endif %}
+
+		</div>
+		</div>
 
 
 
