@@ -102,6 +102,7 @@ def playlists():
 	REDIRECT_URI = "{}:{}/playlists/q".format(CLIENT_SIDE_URL, PORT)
 
 	playlists = []
+	playlist_dict = {}
 
 	auth_token = request.args['code']
 	code_payload = {
@@ -133,19 +134,18 @@ def playlists():
 
 	for playlist in playlists_data["items"]:
 		playlists.append((playlist["name"], playlist["id"]))
+		playlist_dict[playlist["id"]] = playlist["name"]
+
+	session["playlist_dict"] = playlist_dict
 
 	return render_template("home.html", playlists = playlists, current_song= session["current_song"], artist_name=session["artist_name"], album_image= session["album_image"], now_playing = session["now_playing"])
 
 @app.route("/callback/q", methods=["POST", "GET"])
 def callback():
 
-	
-	#playlist = request.form["playlist"]
-	#save_delete = request.form["answer"]
-	#current_song = session.pop("current_song")
 
-	print "yes"
-	
+	playlist_id = {}
+	playlist_name = ""
 
 	REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
 	auth_token = request.args['code']
@@ -177,21 +177,28 @@ def callback():
 
 
 	song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["current_song"][0]+  "&artist:" + session["artist_name"][0]+ "&type=track"
-	print song_endpoint
+
 	song_data = requests.get(song_endpoint).json()
 
 	song_uri = song_data["tracks"]["items"][0]["uri"]
 
 	request_data = "{\"tracks\": [{\"uri\":\"" + song_uri+ "\"}]}"
 
-	print request_data
+	playlist_id = session.pop("playlist_dict")
+
+	
+
+	playlist_name = playlist_id[session.pop("playlist")]
+
 
 	response = requests.delete(playlist_api_endpoint, data = request_data, headers= authorization_header).json()
 
-	print response
+	
+
+
 
 	if response.get("snapshot_id"):
-		return render_template("delete.html", success= True, deleted_song=session.pop("current_song"))
+		return render_template("delete.html", success= True, playlist_name = playlist_name, deleted_song=session.pop("current_song"), album_image = session.pop("album_image"), artist_name = session.pop("artist_name"))
 	else:
 		return render_template("delete.html", success=False)
 
@@ -212,7 +219,7 @@ def hello():
 	album_image.append(song_info["recenttracks"]["track"][0]["image"][3]["#text"])
 
 	artist_name.append(song_info["recenttracks"]["track"][0]["artist"]["#text"])
-	#print song_info["recenttracks"]["track"][0]["image"][1]["#text"]
+	
 
 	if "@attr" in song_info["recenttracks"]["track"][0].keys():
 

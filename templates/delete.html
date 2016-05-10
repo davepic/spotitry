@@ -6,10 +6,12 @@
 	<div class= "small-12 columns">
 	<h1 style="color:#090A0A;">Spotitry</h1>
 
-	<h2 style="color:#090A0A;">Delete Summary</h2>
+	
 	
 		
 		{% if success %}
+
+		<h3 style="color:#090A0A;">Delete Summary</h2>
 
 		<ul class= "results">
 
@@ -19,14 +21,8 @@
 
 		<ul>
 
-			{% if now_playing %}
-			<li><h4>Now Playing: {{deleted_song[0]}}</h4></li>
-			{% else %}
-			<li><h4>Last Played: {{deleted_song[0]}}</h4></li>
-			{% endif %}
-
+			<li><h4>Song: {{deleted_song[0]}}</h4></li>
 			<li><h4>Artist: {{artist_name[0]}}</h4></li>
-		
 			<li><h4>Playlist: {{playlist_name}}</h4></li>
 
 		
