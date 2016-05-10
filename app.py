@@ -123,7 +123,8 @@ def saved():
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 	
     
-	song_endpoint = "https://api.spotify.com/v1/search?q=" + session["current_song"][0]+  "&artist:" + session["artist_name"][0]+ "&type=track"
+	song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["current_song"][0]+  "%20artist:" + session["artist_name"][0]+ "&type=track"
+	print song_endpoint
 
 
 
