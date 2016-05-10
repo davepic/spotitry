@@ -42,7 +42,7 @@ SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
 CLIENT_SIDE_URL = "http://0.0.0.0"
 PORT = 5000
 
-SCOPE = "playlist-modify-public playlist-modify-private"
+SCOPE = "playlist-modify-public playlist-modify-private user-library-modify"
 STATE = ""
 SHOW_DIALOG_bool = True
 SHOW_DIALOG_str = str(SHOW_DIALOG_bool).lower()
@@ -70,7 +70,76 @@ def playlist():
 	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
 	return redirect(auth_url)
 
+@app.route("/save", methods=["POST", "GET"])
+def save():
 
+	REDIRECT_URI = "{}:{}/saved/q".format(CLIENT_SIDE_URL, PORT)
+
+	auth_query_parameters = {
+    "response_type": "code",
+    "redirect_uri": REDIRECT_URI,
+    "scope": SCOPE,
+    # "state": STATE,
+    # "show_dialog": SHOW_DIALOG_str,
+    "client_id": CLIENT_ID
+	}
+
+	url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
+	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
+	return redirect(auth_url)
+
+
+
+
+
+@app.route("/saved/q", methods=["POST", "GET"])
+def saved():
+
+	REDIRECT_URI = "{}:{}/saved/q".format(CLIENT_SIDE_URL, PORT)
+
+
+	auth_token = request.args['code']
+	code_payload = {
+    	"grant_type": "authorization_code",
+        "code": str(auth_token),
+        "redirect_uri": REDIRECT_URI
+    }
+	base64encoded = base64.b64encode("{}:{}".format(CLIENT_ID, CLIENT_SECRET))
+	headers = {"Authorization": "Basic " + base64encoded}
+	post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
+
+	# Auth Step 5: Tokens are Returned to Application
+	response_data = json.loads(post_request.text)
+	access_token = response_data["access_token"]
+	refresh_token = response_data["refresh_token"]
+	token_type = response_data["token_type"]
+	expires_in = response_data["expires_in"]
+
+    # Auth Step 6: Use the access token to access Spotify API
+	authorization_header = {"Authorization":"Bearer " + access_token, "Content-Type": "application/json"}
+
+	# Get profile data
+	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
+	
+    
+	song_endpoint = "https://api.spotify.com/v1/search?q=" + session["current_song"][0]+  "&artist:" + session["artist_name"][0]+ "&type=track"
+
+
+
+	song_data = requests.get(song_endpoint).json()
+
+	#CHECK TO MAKE SURE IT'S THE RIGHT ARTIST
+
+	song_id = song_data["tracks"]["items"][0]["id"]
+
+	request_data = "[\"" + song_id + "\"]"
+	print request_data
+
+	response = requests.put("https://api.spotify.com/v1/me/tracks", headers=authorization_header, data= request_data)
+	print response
+
+	return render_template("save.html",  saved_song= session.pop("current_song"), artist_name=session.pop("artist_name"), album_image= session.pop("album_image"))
 
 
 @app.route("/delete", methods=["POST", "GET"])
@@ -233,13 +302,6 @@ def hello():
 
 	return redirect("/playlist")
 
-
-
-@app.route("/save", methods=["POST", "GET"])
-def save():
-
-
-	return render_template("save.html", playlist= request.form["playlist"])
 
 
 
