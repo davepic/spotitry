@@ -233,14 +233,24 @@ def callback():
     # Get user playlist data
 	playlist_api_endpoint = "{}/playlists/{}/tracks".format(profile_data["href"], session["playlist"])
 
+	print session["artist_name"][0]
 
-	song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["current_song"][0]+  "&artist:" + session["artist_name"][0]+ "&type=track"
+	song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["current_song"][0]+  "%20artist:" + session["artist_name"][0]+ "&type=track"
+
+	print song_endpoint
 
 	song_data = requests.get(song_endpoint).json()
 
+
+	print song_data["tracks"]["items"]
+
 	song_uri = song_data["tracks"]["items"][0]["uri"]
 
+	print song_uri
+
 	request_data = "{\"tracks\": [{\"uri\":\"" + song_uri+ "\"}]}"
+
+
 
 	playlist_id = session.pop("playlist_dict")
 
@@ -263,8 +273,8 @@ def callback():
 
 
 
-@app.route("/")
-def hello():
+@app.route("/edit")
+def edit():
 
 	song_info = requests.get("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=dpiccolella&api_key=e8d959e5d2743dca3d2962338084b0ed&format=json").json()
 	current_song = []
@@ -291,6 +301,10 @@ def hello():
 
 	return redirect("/playlist")
 
+
+@app.route("/")
+def home():
+	return render_template("base.html")
 
 
 
