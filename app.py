@@ -13,10 +13,6 @@ import requests.packages.urllib3
 from flask.ext.paginate import Pagination
 
 
-#WORKS TO PREVENT DUPS BUT MESSES UP CONNECTION
-#from signal import signal, SIGPIPE, SIG_DFL
-#signal(SIGPIPE,SIG_DFL)
-
 requests.packages.urllib3.disable_warnings()
 
 
@@ -38,10 +34,9 @@ API_VERSION = "v1"
 SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
 
 
-# Server-side Parameters
+
 CLIENT_SIDE_URL = "http://0.0.0.0"
 PORT = 5000
-
 SCOPE = "playlist-modify-public playlist-modify-private user-library-modify"
 STATE = ""
 SHOW_DIALOG_bool = True
@@ -61,8 +56,6 @@ def playlist():
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
     "scope": SCOPE,
-    # "state": STATE,
-    # "show_dialog": SHOW_DIALOG_str,
     "client_id": CLIENT_ID
 	}
 
@@ -79,8 +72,6 @@ def save():
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
     "scope": SCOPE,
-    # "state": STATE,
-    # "show_dialog": SHOW_DIALOG_str,
     "client_id": CLIENT_ID
 	}
 
@@ -130,15 +121,14 @@ def saved():
 
 	song_data = requests.get(song_endpoint).json()
 
-	#CHECK TO MAKE SURE IT'S THE RIGHT ARTIST
 
 	song_id = song_data["tracks"]["items"][0]["id"]
 
 	request_data = "[\"" + song_id + "\"]"
-	print request_data
+	
 
 	response = requests.put("https://api.spotify.com/v1/me/tracks", headers=authorization_header, data= request_data)
-	print response
+
 
 	return render_template("save.html",  saved_song= session.pop("current_song"), artist_name=session.pop("artist_name"), album_image= session.pop("album_image"))
 
@@ -155,8 +145,6 @@ def delete():
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
     "scope": SCOPE,
-    # "state": STATE,
-    # "show_dialog": SHOW_DIALOG_str,
     "client_id": CLIENT_ID
 	}
 
