@@ -13,12 +13,12 @@ from datetime import *
 from flask_mail import Mail, Message
 import requests.packages.urllib3
 from flask.ext.paginate import Pagination
-
+from openpyxl import *
 
 requests.packages.urllib3.disable_warnings()
 
 UPLOAD_FOLDER = '/Users/Dave/Documents'
-ALLOWED_EXTENSIONS = set(['txt'])
+ALLOWED_EXTENSIONS = set(['txt', 'xlsx'])
 
 
 
@@ -318,10 +318,16 @@ def home():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 
-			file_contents = file.read().split(';')
+			wb = load_workbook(filename=filename)
+			ws1 = wb.active
 
-			for data in file_contents:
-				print data.strip()
+
+
+			print ws1.cell(column=1, row=1).value
+			#file_contents = file.read().split(';')
+
+			#for data in file_contents:
+			#	print data.strip()
 			
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return "base.html"
