@@ -311,12 +311,21 @@ def edit():
 @app.route("/", methods = ['GET', 'POST'])
 def home():
 
+
+
 	if request.method == 'POST':
 		file = request.files['file']
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
+
+			file_contents = file.read().split(';')
+
+			for data in file_contents:
+				print data.strip()
+			
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			return redirect(url_for('uploaded_file', filename = filename))
+			return "base.html"
+			#return redirect(url_for('uploaded_file', filename = filename))
 
 
 	return render_template("form.html")
