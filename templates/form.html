@@ -1,11 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Upload new File{% endblock %}
+{% block title %}Upload New File{% endblock %}
 
 {% block body %}
 
-	<h1>Upload new File</h1>
+	<div class="row" style="text-align: center;">
+	<div class="small-12 columns">
 
-	<form action="" method=post enctype="multipart/form-data"><p><input type=file name = file><input type=submit value=Upload></input></input></p></form>
+	<h1>Upload New File</h1>
 
+	
+	<form action="" style="display:inline-block; padding:100px;"method=post enctype="multipart/form-data">
+
+		<input type=text name = "playlist" style="padding-bottom: 20px;" placeholder="Enter Playlist Name"></input>
+
+		<input type=file name = file style="padding-bottom: 20px;">
+		
+			<input type=submit value=Upload></input>
+
+		</input>
+
+	</form>
+
+	</div>
+	</div>
 
 {% endblock %}

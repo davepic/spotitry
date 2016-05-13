@@ -116,7 +116,7 @@ def uploaded():
 
 	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
 	
-	response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + "Test" + "\"}", headers=authorization_header).json()
+	response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + session.pop("playlist_name") + "\"}", headers=authorization_header).json()
 	song_url = response["tracks"]["href"]
 
 	for i in range(len(session["song_list"])):
@@ -125,7 +125,7 @@ def uploaded():
 		if song_data["tracks"]["items"] != []:
 			song_response = requests.post(song_url + "?uris=" + song_data["tracks"]["items"][0]["uri"], headers=authorization_header).json()
 
-
+	
 	return render_template("upload.html", song_list = session.pop("song_list"))
 
 
@@ -394,15 +394,11 @@ def home():
 				j=j+1
 
 			session["song_list"] = song_list
-			
-				
-			#file_contents = file.read().split(';')
-
-			#for data in file_contents:
-			#	print data.strip()
+			session["playlist_name"] = request.form["playlist"]
+		
 			
 			return redirect("/upload")
-			#return redirect(url_for('uploaded_file', filename = filename))
+			
 
 
 	return render_template("form.html")
