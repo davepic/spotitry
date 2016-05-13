@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Playlist{% endblock %}
+
+{% block body %}
+
+	{% for song in song_list %}
+
+		<p>{{song[0]}} {{song[1]}}</p>
+
+	{% endfor %}
+
+{% endblock %}
