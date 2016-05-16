@@ -2,11 +2,20 @@
 {% block title %}Playlist{% endblock %}
 
 {% block body %}
+	
 
+	<h1>Successfully Added Songs:</h1>
+
+	<ul style="list-style-type:none;">
+	{% set index = 1 %}
 	{% for song in song_list %}
 
-		<p>{{song[0]}} {{song[1]}}</p>
+		<li>{{index}}. {{song[0]}} | {{song[1]}}</li>
 
+
+	{% set index = index + 1 %}
 	{% endfor %}
+
+	</ul>
 
 {% endblock %}

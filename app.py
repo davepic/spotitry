@@ -369,8 +369,8 @@ def edit():
 	return redirect("/playlist")
 
 
-@app.route("/", methods = ['GET', 'POST'])
-def home():
+@app.route("/uploads", methods = ['GET', 'POST'])
+def uploads():
 
 
 	song_list = []
@@ -389,7 +389,7 @@ def home():
 
 			while ws1.cell(column=1, row=j).value:
 
-				song_list.append((ws1.cell(column=1, row=j).value, ws1.cell(column=2, row=j).value))
+				song_list.append((str(ws1.cell(column=1, row=j).value).capitalize(), str(ws1.cell(column=2, row=j).value).capitalize()))
 
 				j=j+1
 
@@ -402,6 +402,12 @@ def home():
 
 
 	return render_template("form.html")
+
+
+@app.route("/")
+def home():
+
+	return render_template('base.html')
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
