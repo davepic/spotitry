@@ -69,6 +69,24 @@ def playlist():
 	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
 	return redirect(auth_url)
 
+@app.route("/setlist", methods=["POST", "GET"])
+def setlist():
+
+	REDIRECT_URI = "{}:{}/setlists/q".format(CLIENT_SIDE_URL, PORT)
+
+	auth_query_parameters = {
+    "response_type": "code",
+    "redirect_uri": REDIRECT_URI,
+    "scope": SCOPE,
+    "client_id": CLIENT_ID
+	}
+
+	url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
+	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
+	return redirect(auth_url)
+
+
+
 @app.route("/upload", methods=["POST", "GET"])
 def upload():
 
@@ -84,6 +102,49 @@ def upload():
 	url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
 	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
 	return redirect(auth_url)
+
+@app.route("/setlists/q", methods=["POST", "GET"])
+def setlisted():
+
+	REDIRECT_URI = "{}:{}/setlists/q".format(CLIENT_SIDE_URL, PORT)
+
+	auth_token = request.args['code']
+	code_payload = {
+    	"grant_type": "authorization_code",
+        "code": str(auth_token),
+        "redirect_uri": REDIRECT_URI
+    }
+	base64encoded = base64.b64encode("{}:{}".format(CLIENT_ID, CLIENT_SECRET))
+	headers = {"Authorization": "Basic " + base64encoded}
+	post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
+
+	# Auth Step 5: Tokens are Returned to Application
+	response_data = json.loads(post_request.text)
+	access_token = response_data["access_token"]
+	refresh_token = response_data["refresh_token"]
+	token_type = response_data["token_type"]
+	expires_in = response_data["expires_in"]
+
+    # Auth Step 6: Use the access token to access Spotify API
+	authorization_header = {"Authorization":"Bearer " + access_token, "Content-Type": "application/json"}
+
+	# Get profile data
+	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
+
+	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
+	
+	response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + session.pop("playlist_name") + "\"}", headers=authorization_header).json()
+	song_url = response["tracks"]["href"]
+
+	for i in range(len(session["song_list"])):
+		song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["song_list"][i][0]+  "%20artist:" + session["song_list"][i][1]+ "&type=track"
+		song_data = requests.get(song_endpoint).json()
+		if song_data["tracks"]["items"] != []:
+			song_response = requests.post(song_url + "?uris=" + song_data["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+
+	
+	return render_template("upload.html", song_list = session.pop("song_list"))
 
 @app.route("/upload/q", methods=["POST", "GET"])
 def uploaded():
