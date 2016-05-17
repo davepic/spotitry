@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{%  block title %}Setlister{% endblock %}
+
+{% block body %}
+
+
+	
+	<div class="row" style="text-align: center;">
+	<div class="small-12 columns">
+
+	<h1>Setlister</h1>
+
+	<form action = "/setlist" method="post" style="display:inline-block;">
+		
+
+	<input type=text name = "playlist" style="padding-bottom: 20px; width: 250px;" placeholder="Enter Playlist Name"></input>
+
+	<input type="text" name="setlist_id" placeholder="Enter Setlist ID" style="width: 250px;">
+
+	<div>
+
+		<button class="postfix search-button" type="submit" style="width:auto; height:38px;" >Submit</button>
+
+	</div>
+
+
+	</form>
+
+	</div>
+	</div>
+
+
+
+
+
+{% endblock %}

@@ -72,18 +72,27 @@ def playlist():
 @app.route("/setlist", methods=["POST", "GET"])
 def setlist():
 
-	REDIRECT_URI = "{}:{}/setlists/q".format(CLIENT_SIDE_URL, PORT)
 
-	auth_query_parameters = {
-    "response_type": "code",
-    "redirect_uri": REDIRECT_URI,
-    "scope": SCOPE,
-    "client_id": CLIENT_ID
-	}
+	if request.method == "POST":
 
-	url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
-	auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
-	return redirect(auth_url)
+		REDIRECT_URI = "{}:{}/setlists/q".format(CLIENT_SIDE_URL, PORT)
+
+		session["setlist_name"] = request.form["playlist"]
+		session["setlist_id"] = request.form["setlist_id"]
+
+		auth_query_parameters = {
+    	"response_type": "code",
+    	"redirect_uri": REDIRECT_URI,
+    	"scope": SCOPE,
+    	"client_id": CLIENT_ID
+		}
+
+		url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
+		auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
+		
+		return redirect(auth_url)
+
+	return render_template("setlister.html")
 
 
 
@@ -105,6 +114,10 @@ def upload():
 
 @app.route("/setlists/q", methods=["POST", "GET"])
 def setlisted():
+
+	setlist = []
+	songs= []
+	errors = []
 
 	REDIRECT_URI = "{}:{}/setlists/q".format(CLIENT_SIDE_URL, PORT)
 
@@ -133,18 +146,94 @@ def setlisted():
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 
 	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
-	
-	response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + session.pop("playlist_name") + "\"}", headers=authorization_header).json()
-	song_url = response["tracks"]["href"]
 
-	for i in range(len(session["song_list"])):
-		song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["song_list"][i][0]+  "%20artist:" + session["song_list"][i][1]+ "&type=track"
-		song_data = requests.get(song_endpoint).json()
-		if song_data["tracks"]["items"] != []:
-			song_response = requests.post(song_url + "?uris=" + song_data["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+
+	playlist_create_response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + session.pop("setlist_name") + "\"}", headers=authorization_header).json()
+	
+	playlist_url = playlist_create_response["tracks"]["href"]
+	
+
+	setlist_url = "http://api.setlist.fm/rest/0.1/setlist/" + session.pop("setlist_id") + ".json"
+
+
+
+	index = 0
+
+
+	try:
+		setlist_dict = requests.get(setlist_url).json()
+
+		
+		if setlist_dict["setlist"]["sets"] != "":
+
+			artist_name = setlist_dict["setlist"]["artist"]["@name"]
+
+			if type(setlist_dict["setlist"]["sets"]["set"]	) is list:
+				for show_setlist in setlist_dict["setlist"]["sets"]["set"]:
+					if "@encore" in show_setlist.keys():
+						setlist.append(("Encore " + show_setlist["@encore"]+" :", ""))
+						
+					if type(show_setlist["song"]) is list:
+						for song in show_setlist["song"]:
+							if "cover" in song.keys():
+								setlist.append((song["@name"], song["cover"]["@name"]))
+							else:
+								setlist.append((song["@name"], ""))
+							
+					else:
+						if "cover" in show_setlist["song"].keys():
+							setlist.append((show_setlist["song"]["@name"], show_setlist["song"]["cover"]["@name"])) 
+						else:
+							setlist.append((show_setlist["song"]["@name"], ""))
+						
+
+			else:
+				for song in setlist_dict["setlist"]["sets"]["set"]["song"]:
+					if "cover" in song.keys():
+						setlist.append((song["@name"], song["cover"]["@name"]))
+					else:
+						setlist.append((song["@name"], ""))
+
+
+
+		for song in setlist:
+			if song[0][:6] != "Encore":
+
+				try:
+					track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song[0] +"%20artist:" + artist_name + "&type=track").json()
+					
+					if track_info["tracks"]["items"] == []:
+						
+						if song[1] != "":
+							#track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song + "&type=track").json()
+							track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song[0] +"%20artist:" + song[1] + "&type=track").json()
+						
+
+							if track_info["tracks"]["items"] == []:
+								errors.append(song)
+							else:
+								song_response = requests.post(playlist_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+								songs.append(song)
+						else:
+							errors.append(song)
+					else:
+						song_response = requests.post(playlist_url + "?uris=" + track_info["tracks"]["items"][0]["uri"], headers=authorization_header).json()
+						songs.append(song)
+
+				except ValueError:
+					errors.append(song)
+					
+	except ValueError:
+		pass
+
+	#for i in range(len(session["song_list"])):
+	#	song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["song_list"][i][0]+  "%20artist:" + session["song_list"][i][1]+ "&type=track"
+	#	song_data = requests.get(song_endpoint).json()
+	#	if song_data["tracks"]["items"] != []:
+	#		song_response = requests.post(song_url + "?uris=" + song_data["tracks"]["items"][0]["uri"], headers=authorization_header).json()
 
 	
-	return render_template("upload.html", song_list = session.pop("song_list"))
+	return render_template("setlister.html")
 
 @app.route("/upload/q", methods=["POST", "GET"])
 def uploaded():
