@@ -119,6 +119,10 @@ def setlisted():
 	songs= []
 	errors = []
 
+	full_url = session.pop("setlist_id")
+
+	setlist_id = full_url.split('-')[-1].split('.')[0]
+
 	REDIRECT_URI = "{}:{}/setlists/q".format(CLIENT_SIDE_URL, PORT)
 
 	auth_token = request.args['code']
@@ -153,7 +157,7 @@ def setlisted():
 	playlist_url = playlist_create_response["tracks"]["href"]
 	
 
-	setlist_url = "http://api.setlist.fm/rest/0.1/setlist/" + session.pop("setlist_id") + ".json"
+	setlist_url = "http://api.setlist.fm/rest/0.1/setlist/" + setlist_id + ".json"
 
 
 
