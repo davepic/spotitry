@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Success{% endblock %}
+
+{% block body %}
+
+	<h1>Successful Adds:</h1>
+
+	<ul style="list-style-type: none;">
+	{% set index = 1 %}
+	{% for song in songs %}
+
+		<li>{{index}}. {{song[0]}}</li>
+		{% set index = index + 1 %}
+
+	{% endfor %}
+
+	</ul>
+
+
+
+	{% if errors %}
+	<h1>Errors:</h1>
+
+	{% set index = 1 %}
+
+
+	<ul style="list-style-type: none;">
+	{% for error in errors %}
+
+		<li>{{index}}. {{song}}</li>
+		{% set index = index +1 %}
+
+
+	{% endfor %}
+	</ul>
+
+	{% endif %}
+
+
+{% endblock %}

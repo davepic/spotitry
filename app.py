@@ -230,14 +230,8 @@ def setlisted():
 	except ValueError:
 		pass
 
-	#for i in range(len(session["song_list"])):
-	#	song_endpoint = "https://api.spotify.com/v1/search?q=track:" + session["song_list"][i][0]+  "%20artist:" + session["song_list"][i][1]+ "&type=track"
-	#	song_data = requests.get(song_endpoint).json()
-	#	if song_data["tracks"]["items"] != []:
-	#		song_response = requests.post(song_url + "?uris=" + song_data["tracks"]["items"][0]["uri"], headers=authorization_header).json()
-
 	
-	return render_template("setlister.html")
+	return render_template("success.html", songs = songs, errors=errors)
 
 @app.route("/upload/q", methods=["POST", "GET"])
 def uploaded():
