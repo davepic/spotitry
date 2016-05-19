@@ -3,19 +3,24 @@
 
 {% block body %}
 	
+	<div class = "row">
+	<div class = "small-12 columns">
+		<h1>Successfully Added Songs:</h1>
 
-	<h1>Successfully Added Songs:</h1>
+		<ul style="list-style-type:none;">
+		{% set index = 1 %}
+		{% for song in song_list %}
 
-	<ul style="list-style-type:none;">
-	{% set index = 1 %}
-	{% for song in song_list %}
-
-		<li>{{index}}. {{song[0]}} | {{song[1]}}</li>
+			<li>{{index}}. {{song[0]}} | {{song[1]}}</li>
 
 
-	{% set index = index + 1 %}
-	{% endfor %}
+		{% set index = index + 1 %}
+		{% endfor %}
 
-	</ul>
+		</ul>
+
+		
+	</div>
+	</div>
 
 {% endblock %}
