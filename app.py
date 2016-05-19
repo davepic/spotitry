@@ -1,10 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, session, url_for, send_from_directory
 from werkzeug import secure_filename
-from flask.ext.mongoengine import MongoEngine
 from flask.ext.login import LoginManager, login_user, logout_user, login_required, current_user
-from flask.ext.mongoengine.wtf import model_form
-from wtforms import PasswordField
 import datetime
 import urllib
 import base64
@@ -18,7 +15,7 @@ from openpyxl import *
 requests.packages.urllib3.disable_warnings()
 
 UPLOAD_FOLDER = '/Users/Dave/Documents'
-ALLOWED_EXTENSIONS = set(['txt', 'xlsx'])
+ALLOWED_EXTENSIONS = set(['xlsx'])
 
 
 
@@ -209,7 +206,7 @@ def setlisted():
 					if track_info["tracks"]["items"] == []:
 						
 						if song[1] != "":
-							#track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song + "&type=track").json()
+							
 							track_info = requests.get("https://api.spotify.com/v1/search?q=track:" + song[0] +"%20artist:" + song[1] + "&type=track").json()
 						
 
@@ -248,17 +245,17 @@ def uploaded():
 	headers = {"Authorization": "Basic " + base64encoded}
 	post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
 
-	# Auth Step 5: Tokens are Returned to Application
+	
 	response_data = json.loads(post_request.text)
 	access_token = response_data["access_token"]
 	refresh_token = response_data["refresh_token"]
 	token_type = response_data["token_type"]
 	expires_in = response_data["expires_in"]
 
-    # Auth Step 6: Use the access token to access Spotify API
+    
 	authorization_header = {"Authorization":"Bearer " + access_token, "Content-Type": "application/json"}
 
-	# Get profile data
+	
 	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 
@@ -384,21 +381,21 @@ def playlists():
 	headers = {"Authorization": "Basic " + base64encoded}
 	post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
 
-	# Auth Step 5: Tokens are Returned to Application
+	
 	response_data = json.loads(post_request.text)
 	access_token = response_data["access_token"]
 	refresh_token = response_data["refresh_token"]
 	token_type = response_data["token_type"]
 	expires_in = response_data["expires_in"]
 
-    # Auth Step 6: Use the access token to access Spotify API
+    
 	authorization_header = {"Authorization":"Bearer " + access_token, "Content-Type": "application/json"}
 
-	# Get profile data
+	
 	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 	
-    #Get user playlist data
+    
 	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
 	playlists_data = requests.get(playlist_api_endpoint, headers=authorization_header).json()
 
@@ -428,21 +425,21 @@ def callback():
 	headers = {"Authorization": "Basic " + base64encoded}
 	post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
 
-	# Auth Step 5: Tokens are Returned to Application
+	
 	response_data = json.loads(post_request.text)
 	access_token = response_data["access_token"]
 	refresh_token = response_data["refresh_token"]
 	token_type = response_data["token_type"]
 	expires_in = response_data["expires_in"]
 
-    # Auth Step 6: Use the access token to access Spotify API
+    
 	authorization_header = {"Authorization":"Bearer " + access_token, "Content-Type": "application/json"}
 
-    # Get profile data
+    
 	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 	
-    # Get user playlist data
+    
 	playlist_api_endpoint = "{}/playlists/{}/tracks".format(profile_data["href"], session["playlist"])
 
 
@@ -463,9 +460,6 @@ def callback():
 	response = requests.delete(playlist_api_endpoint, data = request_data, headers= authorization_header).json()
 
 	
-
-
-
 	if response.get("snapshot_id"):
 		return render_template("delete.html", success= True, playlist_name = playlist_name, deleted_song=session.pop("current_song"), album_image = session.pop("album_image"), artist_name = session.pop("artist_name"))
 	else:
@@ -542,11 +536,6 @@ def uploads():
 def home():
 
 	return render_template('home.html')
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
 
 
 if __name__ == "__main__":
