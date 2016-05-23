@@ -13,7 +13,35 @@
 
 </head>
 
+<style type="text/css">
+	
+	div#content {
+    	display: none;
+    }
+ 
+	div#loading {
+    	top: 200 px;
+    	margin: auto;
+    	position: absolute;
+    	z-index: 1000;
+    	width: 160px;
+    	height: 24px;
+    	background: url(loadingimage.gif) no-repeat;
+    	cursor: wait;
+    }
+
+
+
+
+
+</style>
+
+
+
 <body style="background: linear-gradient(to bottom, #56FC69, #56FC69 50%, #46BD53 50%, #46BD53); background-size: 100% 5%; font-family: 'Roboto Condensed', sans-serif;">
+
+	<div id="loading"></div>
+	<div id="content">
 
 	<div class="top-bar" style="background-color: #090A0A;" >
 		<div class="top-bar-right" style="background-color: #090A0A">
@@ -25,17 +53,50 @@
 
 			</ul>
 		</div>
-		
+	
 	</div>
 
 	<div class="row">
 		<div class="large-12 columns">
 			<div class="panel" style="padding-bottom: 10px; padding-top:10px;">
-				{% block body %}{% endblock %}
+				<div class="row" style="text-align: center;">
+	<div class="small-12 columns">
+
+
+	
+
+	<h1>Upload New File</h1>
+
+	
+	<form action="" style="display:inline-block; padding:50px;" method=post enctype="multipart/form-data">
+
+		<input type=text name = "playlist" style="padding-bottom: 20px;" placeholder="Enter Playlist Name"></input>
+
+		<input type=file name = file style="padding-bottom: 20px;"></input>
+
+		<div>
+			<button class="postfix search-button" style="width:auto; height:38px;" type="submit">Upload</button>
+		</div>
+
+	</form>
+
+	
+
+	</div>
+	</div>
 			</div>
 
 		</div>
 	</div>
+	</div>
+
+<script type="text/javascript">// <![CDATA[
+        function preloader(){
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+        }//preloader
+        window.onload = preloader;
+// ]]></script>
 
 <script src="{{ url_for('static', filename='js/vendor/jquery.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/foundation.js') }}"></script>
