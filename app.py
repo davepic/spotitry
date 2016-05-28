@@ -22,7 +22,7 @@ ALLOWED_EXTENSIONS = set(['xlsx'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config["DEBUG"] = True
-app.config['SECRET_KEY'] = 'ajosjdfajjjj3453453oj!!!oij'
+app.config['SECRET_KEY'] = 'oijioajisjdoifjoijooi1iybrbi23234234>?@>?S>DA<Sd'
 app.config['WTF_CSRF_ENABLED'] = True
 
 
@@ -260,6 +260,8 @@ def uploaded():
 	profile_data = requests.get(user_profile_api_endpoint, headers=authorization_header).json()
 
 	playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
+	
+
 	
 	response = requests.post(playlist_api_endpoint, data="{\"name\":\"" + session.pop("playlist_name") + "\"}", headers=authorization_header).json()
 	song_url = response["tracks"]["href"]
@@ -523,7 +525,7 @@ def uploads():
 
 			session["song_list"] = song_list
 			session["playlist_name"] = request.form["playlist"]
-		
+			
 			
 			return redirect("/upload")
 			
